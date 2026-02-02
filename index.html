@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Invoice Generator - Create & Download PDF Invoices | MakeInvoice.online</title>
+  <meta name="description" content="Create professional invoices for free. Easy-to-use invoice generator with live preview, PDF download, and customizable templates. No signup required.">
+  <meta name="keywords" content="free invoice generator, invoice maker online free, create invoice online, invoice template PDF, online invoice creator">
+
+  <!-- Open Graph / Social -->
+  <meta property="og:title" content="Free Invoice Generator - Create & Download PDF Invoices">
+  <meta property="og:description" content="Create professional invoices for free. Easy-to-use invoice generator with live preview and PDF download.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://makeinvoice.online">
+  <meta property="og:image" content="https://makeinvoice.online/assets/og-image.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Free Invoice Generator - MakeInvoice.online">
+  <meta name="twitter:description" content="Create professional invoices for free. Easy-to-use invoice generator with live preview and PDF download.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles/custom.css">
+
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- html2canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <!-- Paddle.js (uncomment when ready) -->
+  <!-- <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script> -->
+
+  <!-- Google AdSense (uncomment when approved) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+
+  <!-- App Scripts -->
+  <script src="js/currencies.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/paddle-handler.js"></script>
+  <script src="js/pdf-generator.js"></script>
+  <script src="js/app.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen" x-data="invoiceApp()" x-init="init()">
+  <!-- Header -->
+  <header class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo -->
+        <div class="flex items-center space-x-3">
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <span class="text-xl font-bold text-gray-900">MakeInvoice<span class="text-blue-600">.online</span></span>
+        </div>
+
+        <!-- Premium Status / Upgrade Button -->
+        <div class="flex items-center space-x-4">
+          <template x-if="isPremium">
+            <div class="flex items-center space-x-2">
+              <span class="premium-badge">
+                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                </svg>
+                Premium
+              </span>
+              <button @click="cancelSubscription()" class="text-sm text-gray-500 hover:text-gray-700">
+                Manage
+              </button>
+            </div>
+          </template>
+          <template x-if="!isPremium">
+            <button @click="showPricingModal = true" class="btn-premium text-sm py-2">
+              Upgrade to Premium
+            </button>
+          </template>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Mobile Tab Switcher -->
+    <div class="lg:hidden flex bg-white rounded-lg shadow mb-6 p-1">
+      <button
+        @click="activeTab = 'form'"
+        :class="activeTab === 'form' ? 'bg-blue-600 text-white' : 'text-gray-600'"
+        class="flex-1 py-2 px-4 rounded-md font-medium transition-colors"
+      >
+        Edit Invoice
+      </button>
+      <button
+        @click="activeTab = 'preview'"
+        :class="activeTab === 'preview' ? 'bg-blue-600 text-white' : 'text-gray-600'"
+        class="flex-1 py-2 px-4 rounded-md font-medium transition-colors"
+      >
+        Preview
+      </button>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8">
+      <!-- Left Column: Form -->
+      <div :class="{ 'hidden lg:block': activeTab === 'preview' }">
+        <!-- Ad Banner (Top - Free users only) -->
+        <div x-show="!isPremium" class="ad-container mb-6">
+          <!-- AdSense Ad Unit - Replace with your ad code -->
+          <p class="text-gray-400 text-sm">Advertisement</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 space-y-6">
+          <!-- Business Info Section -->
+          <section>
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-semibold text-gray-900">Your Business</h2>
+              <div class="flex space-x-2" x-show="isPremium">
+                <button @click="saveBusinessInfo()" class="btn-secondary text-sm">Save</button>
+                <button @click="loadBusinessInfo()" class="btn-secondary text-sm">Load</button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="sm:col-span-2">
+                <label class="form-label">Business Name *</label>
+                <input type="text" x-model="business.name" class="form-input" placeholder="Your Company Name">
+              </div>
+              <div>
+                <label class="form-label">Email</label>
+                <input type="email" x-model="business.email" class="form-input" placeholder="email@company.com">
+              </div>
+              <div>
+                <label class="form-label">Phone</label>
+                <input type="tel" x-model="business.phone" class="form-input" placeholder="+1 (555) 000-0000">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="form-label">Address</label>
+                <textarea x-model="business.address" class="form-input" rows="2" placeholder="123 Business St, City, Country"></textarea>
+              </div>
+
+              <!-- Logo Upload (Premium) -->
+              <div class="sm:col-span-2">
+                <label class="form-label">
+                  Logo
+                  <span x-show="!isPremium" class="text-purple-600 text-xs ml-1">(Premium)</span>
+                </label>
+                <div class="logo-upload" :class="{ 'has-logo': business.logo }">
+                  <template x-if="business.logo">
+                    <div class="relative">
+                      <img :src="business.logo" alt="Logo" class="logo-preview">
+                      <button @click="removeLogo()" class="absolute top-0 right-0 p-1 bg-red-500 text-white rounded-full text-xs">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </template>
+                  <template x-if="!business.logo">
+                    <label class="cursor-pointer">
+                      <svg class="w-10 h-10 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                      <span class="text-sm text-gray-500">Click to upload logo (max 500KB)</span>
+                      <input type="file" accept="image/*" @change="handleLogoUpload($event)" class="hidden">
+                    </label>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Client Info Section -->
+          <section>
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Bill To</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="sm:col-span-2">
+                <label class="form-label">Client Name *</label>
+                <input type="text" x-model="client.name" class="form-input" placeholder="Client or Company Name">
+              </div>
+              <div>
+                <label class="form-label">Client Email</label>
+                <input type="email" x-model="client.email" class="form-input" placeholder="client@email.com">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="form-label">Client Address</label>
+                <textarea x-model="client.address" class="form-input" rows="2" placeholder="Client's address"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <!-- Invoice Details Section -->
+          <section>
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Invoice Details</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label class="form-label">Invoice Number *</label>
+                <input type="text" x-model="invoice.number" class="form-input" placeholder="INV-001">
+              </div>
+              <div>
+                <label class="form-label">Invoice Date</label>
+                <input type="date" x-model="invoice.date" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Due Date</label>
+                <input type="date" x-model="invoice.dueDate" class="form-input">
+              </div>
+            </div>
+          </section>
+
+          <!-- Currency & Tax Section -->
+          <section>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="form-label">
+                  Currency
+                  <span x-show="!isPremium" class="text-purple-600 text-xs ml-1">(More with Premium)</span>
+                </label>
+                <select x-model="currency" @change="onCurrencyChange()" class="currency-selector">
+                  <template x-if="!isPremium">
+                    <option value="USD">USD ($) - US Dollar</option>
+                  </template>
+                  <template x-if="isPremium">
+                    <template x-for="curr in CURRENCIES" :key="curr.code">
+                      <option :value="curr.code" x-text="`${curr.code} (${curr.symbol}) - ${curr.name}`"></option>
+                    </template>
+                  </template>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Tax Rate (%)</label>
+                <input type="number" x-model="taxRate" min="0" max="100" step="0.1" class="form-input" placeholder="0">
+              </div>
+            </div>
+          </section>
+
+          <!-- Line Items Section -->
+          <section>
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Items</h2>
+            <div class="overflow-x-auto">
+              <table class="line-items-table">
+                <thead>
+                  <tr>
+                    <th class="w-1/2">Description</th>
+                    <th class="w-20 text-center">Qty</th>
+                    <th class="w-28 text-right">Price</th>
+                    <th class="w-28 text-right">Amount</th>
+                    <th class="w-10"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template x-for="(item, index) in items" :key="index">
+                    <tr>
+                      <td class="pr-2">
+                        <input type="text" x-model="item.description" class="form-input text-sm" placeholder="Item description">
+                      </td>
+                      <td class="px-2">
+                        <input type="number" x-model="item.quantity" min="1" class="form-input text-sm text-center" placeholder="1">
+                      </td>
+                      <td class="px-2">
+                        <input type="number" x-model="item.price" min="0" step="0.01" class="form-input text-sm text-right" placeholder="0.00">
+                      </td>
+                      <td class="pl-2 text-right text-gray-700 font-medium" x-text="formatCurrency(item.quantity * item.price)"></td>
+                      <td class="pl-2">
+                        <button @click="removeItem(index)" class="btn-danger" :disabled="items.length === 1">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+            <button @click="addItem()" class="btn-secondary mt-4 w-full sm:w-auto">
+              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Add Item
+            </button>
+          </section>
+
+          <!-- Notes Section -->
+          <section>
+            <label class="form-label">Notes / Terms</label>
+            <textarea x-model="invoice.notes" class="form-input" rows="3" placeholder="Payment terms, bank details, thank you message..."></textarea>
+          </section>
+
+          <!-- Template Selection (Premium) -->
+          <section>
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">
+              Template
+              <span x-show="!isPremium" class="text-purple-600 text-xs ml-1">(Premium)</span>
+            </h2>
+            <div class="grid grid-cols-3 gap-4">
+              <button @click="onTemplateChange('classic')" :class="{ 'selected': template === 'classic' }" class="template-option">
+                <div class="h-16 bg-gray-100 rounded mb-2 flex items-center justify-center">
+                  <span class="text-xs text-gray-500">Classic</span>
+                </div>
+              </button>
+              <button @click="onTemplateChange('modern')" :class="{ 'selected': template === 'modern' }" class="template-option relative">
+                <div class="h-16 bg-blue-100 rounded mb-2 flex items-center justify-center">
+                  <span class="text-xs text-blue-600">Modern</span>
+                </div>
+                <span x-show="!isPremium" class="absolute top-1 right-1 text-xs text-purple-600">PRO</span>
+              </button>
+              <button @click="onTemplateChange('minimal')" :class="{ 'selected': template === 'minimal' }" class="template-option relative">
+                <div class="h-16 bg-gray-50 border rounded mb-2 flex items-center justify-center">
+                  <span class="text-xs text-gray-500">Minimal</span>
+                </div>
+                <span x-show="!isPremium" class="absolute top-1 right-1 text-xs text-purple-600">PRO</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- Download Button -->
+          <div class="pt-4 border-t border-gray-200">
+            <button
+              @click="downloadPDF()"
+              :disabled="isGeneratingPDF"
+              class="btn-primary w-full flex items-center justify-center"
+            >
+              <template x-if="isGeneratingPDF">
+                <span class="flex items-center">
+                  <span class="spinner mr-2"></span>
+                  Generating PDF...
+                </span>
+              </template>
+              <template x-if="!isGeneratingPDF">
+                <span class="flex items-center">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                  </svg>
+                  Download PDF
+                </span>
+              </template>
+            </button>
+            <p x-show="!isPremium" class="text-xs text-gray-500 text-center mt-2">
+              Free version includes watermark.
+              <button @click="showPricingModal = true" class="text-purple-600 hover:underline">Upgrade for watermark-free invoices</button>
+            </p>
+          </div>
+        </div>
+
+        <!-- Ad Banner (Bottom - Free users only) -->
+        <div x-show="!isPremium" class="ad-container mt-6">
+          <!-- AdSense Ad Unit - Replace with your ad code -->
+          <p class="text-gray-400 text-sm">Advertisement</p>
+        </div>
+      </div>
+
+      <!-- Right Column: Preview -->
+      <div :class="{ 'hidden lg:block': activeTab === 'form' }" class="lg:sticky lg:top-8 lg:self-start">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4 hidden lg:block">Live Preview</h2>
+
+        <!-- Invoice Preview -->
+        <div id="invoice-preview" class="invoice-preview rounded-lg p-8" :class="getTemplateClass()">
+          <!-- Header -->
+          <div class="invoice-header" :class="{ 'flex justify-between items-start': template !== 'modern' }">
+            <div :class="{ 'text-white': template === 'modern' }">
+              <!-- Logo -->
+              <template x-if="business.logo">
+                <img :src="business.logo" alt="Business Logo" class="h-16 object-contain mb-4">
+              </template>
+              <h1 class="text-2xl font-bold" :class="template === 'modern' ? 'text-white' : 'text-gray-900'" x-text="business.name || 'Your Business Name'"></h1>
+              <p class="text-sm mt-1" :class="template === 'modern' ? 'text-blue-100' : 'text-gray-600'" x-text="business.email"></p>
+              <p class="text-sm" :class="template === 'modern' ? 'text-blue-100' : 'text-gray-600'" x-text="business.phone"></p>
+              <p class="text-sm whitespace-pre-line" :class="template === 'modern' ? 'text-blue-100' : 'text-gray-600'" x-text="business.address"></p>
+            </div>
+            <div class="text-right" :class="{ 'mt-4': template === 'modern' }">
+              <h2 class="text-3xl font-bold" :class="template === 'modern' ? 'text-white' : 'text-gray-400'">INVOICE</h2>
+              <p class="text-sm mt-2" :class="template === 'modern' ? 'text-blue-100' : 'text-gray-600'">
+                <span class="font-medium">#</span> <span x-text="invoice.number || 'INV-001'"></span>
+              </p>
+              <p class="text-sm" :class="template === 'modern' ? 'text-blue-100' : 'text-gray-600'">
+                <span class="font-medium">Date:</span> <span x-text="invoice.date"></span>
+              </p>
+              <p class="text-sm" :class="template === 'modern' ? 'text-blue-100' : 'text-gray-600'">
+                <span class="font-medium">Due:</span> <span x-text="invoice.dueDate"></span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Bill To -->
+          <div class="mt-8 mb-8">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Bill To</h3>
+            <p class="font-semibold text-gray-900" x-text="client.name || 'Client Name'"></p>
+            <p class="text-sm text-gray-600" x-text="client.email"></p>
+            <p class="text-sm text-gray-600 whitespace-pre-line" x-text="client.address"></p>
+          </div>
+
+          <!-- Items Table -->
+          <table class="w-full mb-8">
+            <thead>
+              <tr class="border-b-2 border-gray-200">
+                <th class="text-left text-sm font-semibold text-gray-600 py-2">Description</th>
+                <th class="text-center text-sm font-semibold text-gray-600 py-2 w-20">Qty</th>
+                <th class="text-right text-sm font-semibold text-gray-600 py-2 w-28">Price</th>
+                <th class="text-right text-sm font-semibold text-gray-600 py-2 w-28">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="(item, index) in items" :key="index">
+                <tr class="border-b border-gray-100">
+                  <td class="py-3 text-gray-800" x-text="item.description || 'Item description'"></td>
+                  <td class="py-3 text-center text-gray-600" x-text="item.quantity"></td>
+                  <td class="py-3 text-right text-gray-600" x-text="formatCurrency(item.price)"></td>
+                  <td class="py-3 text-right font-medium text-gray-800" x-text="formatCurrency(item.quantity * item.price)"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+
+          <!-- Totals -->
+          <div class="flex justify-end">
+            <div class="w-64">
+              <div class="flex justify-between py-2">
+                <span class="text-gray-600">Subtotal</span>
+                <span class="font-medium text-gray-800" x-text="formatCurrency(subtotal)"></span>
+              </div>
+              <div class="flex justify-between py-2" x-show="taxRate > 0">
+                <span class="text-gray-600">Tax (<span x-text="taxRate"></span>%)</span>
+                <span class="font-medium text-gray-800" x-text="formatCurrency(taxAmount)"></span>
+              </div>
+              <div class="flex justify-between py-3 border-t-2 border-gray-800">
+                <span class="text-lg font-bold text-gray-900">Total</span>
+                <span class="text-lg font-bold text-gray-900" x-text="formatCurrency(total)"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div x-show="invoice.notes" class="mt-8 pt-6 border-t border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Notes</h3>
+            <p class="text-sm text-gray-600 whitespace-pre-line" x-text="invoice.notes"></p>
+          </div>
+
+          <!-- Watermark (Free users) -->
+          <div x-show="!isPremium" class="mt-8 pt-4 text-center">
+            <p class="text-xs text-gray-400">Made with MakeInvoice.online</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-gray-200 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <div class="flex items-center space-x-2 mb-4">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span class="font-bold text-gray-900">MakeInvoice.online</span>
+          </div>
+          <p class="text-sm text-gray-600">Create professional invoices for free. Easy-to-use invoice generator with live preview and PDF download.</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-4">Quick Links</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="text-gray-600 hover:text-blue-600">Home</a></li>
+            <li><a href="#" @click.prevent="showPricingModal = true" class="text-gray-600 hover:text-blue-600">Pricing</a></li>
+            <li><a href="legal/privacy.html" class="text-gray-600 hover:text-blue-600">Privacy Policy</a></li>
+            <li><a href="legal/terms.html" class="text-gray-600 hover:text-blue-600">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-4">Support</h3>
+          <p class="text-sm text-gray-600 mb-2">Need help? Contact us at:</p>
+          <a href="mailto:support@makeinvoice.online" class="text-blue-600 hover:underline">support@makeinvoice.online</a>
+        </div>
+      </div>
+      <div class="border-t border-gray-200 mt-8 pt-8 text-center text-sm text-gray-500">
+        <p>&copy; <span x-text="new Date().getFullYear()"></span> MakeInvoice.online. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Pricing Modal -->
+  <div x-show="showPricingModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+      <!-- Backdrop -->
+      <div x-show="showPricingModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showPricingModal = false"></div>
+
+      <!-- Modal -->
+      <div x-show="showPricingModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative bg-white rounded-2xl overflow-hidden shadow-xl transform transition-all sm:max-w-3xl sm:w-full">
+        <!-- Close button -->
+        <button @click="showPricingModal = false" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+
+        <div class="p-8">
+          <h2 class="text-2xl font-bold text-gray-900 text-center mb-2">Upgrade to Premium</h2>
+          <p class="text-gray-600 text-center mb-8">Unlock all features and create professional, watermark-free invoices</p>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <!-- Monthly Plan -->
+            <div class="pricing-card">
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Monthly</h3>
+              <div class="mb-4">
+                <span class="text-4xl font-bold text-gray-900">$7</span>
+                <span class="text-gray-500">/month</span>
+              </div>
+              <ul class="space-y-3 mb-6 text-sm text-gray-600">
+                <li class="flex items-center">
+                  <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  No watermark on invoices
+                </li>
+                <li class="flex items-center">
+                  <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  Save business info templates
+                </li>
+                <li class="flex items-center">
+                  <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  Upload custom logo
+                </li>
+                <li class="flex items-center">
+                  <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  20+ currencies
+                </li>
+                <li class="flex items-center">
+                  <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  Premium templates
+                </li>
+                <li class="flex items-center">
+                  <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  No ads
+                </li>
+              </ul>
+              <button @click="openCheckout('monthly')" class="w-full btn-secondary">
+                Subscribe Monthly
+              </button>
+            </div>
+
+            <!-- Yearly Plan -->
+            <div class="pricing-card recommended">
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Yearly</h3>
+              <div class="mb-4">
+                <span class="text-4xl font-bold text-gray-900">$49</span>
+                <span class="text-gray-500">/year</span>
+                <span class="ml-2 inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded">Save 40%</span>
+              </div>
+              <ul class="space-y-3 mb-6 text-sm text-gray-600">
+                <li class="flex items-center">
+                  <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  Everything in Monthly
+                </li>
+                <li class="flex items-center">
+                  <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  Priority support
+                </li>
+                <li class="flex items-center">
+                  <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  Best value - save $35/year
+                </li>
+              </ul>
+              <button @click="openCheckout('yearly')" class="w-full btn-premium">
+                Subscribe Yearly
+              </button>
+            </div>
+          </div>
+
+          <p class="text-xs text-gray-500 text-center mt-6">
+            Secure payment processed by Paddle. Cancel anytime.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container (for notifications) -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50"></div>
+</body>
+</html>
