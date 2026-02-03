@@ -220,16 +220,31 @@
   }
 }
 
-/* Print styles for PDF */
+/* Print styles */
 @media print {
-  .no-print {
-    display: none !important;
+  /* Hide everything except invoice */
+  body * {
+    visibility: hidden;
   }
 
-  .invoice-preview {
+  #invoice-preview,
+  #invoice-preview * {
+    visibility: visible;
+  }
+
+  #invoice-preview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
     box-shadow: none;
     margin: 0;
-    padding: 20mm;
+    padding: 15mm;
+    transform: none !important;
+  }
+
+  header, footer, .ad-container, .no-print, section.bg-gray-50 {
+    display: none !important;
   }
 }
 
