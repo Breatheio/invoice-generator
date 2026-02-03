@@ -41,6 +41,12 @@ document.addEventListener('alpine:init', () => {
     taxRate: 0,
     template: 'classic',
 
+    // Discount settings
+    discount: {
+      type: 'percentage', // 'percentage' or 'fixed'
+      value: 0,
+    },
+
     // Computed values (updated reactively)
     get subtotal() {
       return this.items.reduce((sum, item) => {
@@ -48,12 +54,24 @@ document.addEventListener('alpine:init', () => {
       }, 0);
     },
 
+    get discountAmount() {
+      const value = parseFloat(this.discount.value) || 0;
+      if (this.discount.type === 'percentage') {
+        return this.subtotal * value / 100;
+      }
+      return value;
+    },
+
+    get subtotalAfterDiscount() {
+      return Math.max(0, this.subtotal - this.discountAmount);
+    },
+
     get taxAmount() {
-      return this.subtotal * (parseFloat(this.taxRate) || 0) / 100;
+      return this.subtotalAfterDiscount * (parseFloat(this.taxRate) || 0) / 100;
     },
 
     get total() {
-      return this.subtotal + this.taxAmount;
+      return this.subtotalAfterDiscount + this.taxAmount;
     },
 
     // Initialize
@@ -244,6 +262,46 @@ document.addEventListener('alpine:init', () => {
       } finally {
         this.isGeneratingPDF = false;
       }
+    },
+
+    // Print invoice
+    printInvoice() {
+      // Basic validation
+      if (!this.business.name || !this.client.name) {
+        this.showToast('Please fill in business and client names', 'error');
+        return;
+      }
+
+      const previewElement = document.getElementById('invoice-preview');
+      const printWindow = window.open('', '_blank');
+
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Invoice ${this.invoice.number}</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+          <style>
+            body { padding: 20px; }
+            @media print {
+              body { padding: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          ${previewElement.outerHTML}
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+                window.close();
+              }, 500);
+            };
+          </script>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
     },
 
     // Open Paddle checkout

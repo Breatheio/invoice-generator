@@ -110,6 +110,15 @@
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 
+  <!-- Performance: Preconnect to CDN domains -->
+  <link rel="preconnect" href="https://cdn.tailwindcss.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -355,6 +364,21 @@
                 <input type="number" x-model="taxRate" min="0" max="100" step="0.1" class="form-input" placeholder="0">
               </div>
             </div>
+
+            <!-- Discount Section -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              <div>
+                <label class="form-label">Discount Type</label>
+                <select x-model="discount.type" class="form-input">
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="fixed">Fixed Amount</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Discount <span x-text="discount.type === 'percentage' ? '(%)' : '(' + getCurrencySymbol() + ')'"></span></label>
+                <input type="number" x-model="discount.value" min="0" step="0.01" class="form-input" placeholder="0">
+              </div>
+            </div>
           </section>
 
           <!-- Line Items Section -->
@@ -437,28 +461,39 @@
             </div>
           </section>
 
-          <!-- Download Button -->
+          <!-- Download & Print Buttons -->
           <div class="pt-4 border-t border-gray-200">
-            <button
-              @click="downloadPDF()"
-              :disabled="isGeneratingPDF"
-              class="btn-primary w-full flex items-center justify-center"
-            >
-              <template x-if="isGeneratingPDF">
-                <span class="flex items-center">
-                  <span class="spinner mr-2"></span>
-                  Generating PDF...
-                </span>
-              </template>
-              <template x-if="!isGeneratingPDF">
-                <span class="flex items-center">
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                  </svg>
-                  Download PDF
-                </span>
-              </template>
-            </button>
+            <div class="flex gap-3">
+              <button
+                @click="downloadPDF()"
+                :disabled="isGeneratingPDF"
+                class="btn-primary flex-1 flex items-center justify-center"
+              >
+                <template x-if="isGeneratingPDF">
+                  <span class="flex items-center">
+                    <span class="spinner mr-2"></span>
+                    Generating...
+                  </span>
+                </template>
+                <template x-if="!isGeneratingPDF">
+                  <span class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Download PDF
+                  </span>
+                </template>
+              </button>
+              <button
+                @click="printInvoice()"
+                class="btn-secondary flex items-center justify-center px-4"
+                title="Print Invoice"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+              </button>
+            </div>
             <p x-show="!isPremium" class="text-xs text-gray-500 text-center mt-2">
               Free version includes watermark.
               <button @click="showPricingModal = true" class="text-purple-600 hover:underline">Upgrade for watermark-free invoices</button>
@@ -541,6 +576,10 @@
               <div class="flex justify-between py-2">
                 <span class="text-gray-600">Subtotal</span>
                 <span class="font-medium text-gray-800" x-text="formatCurrency(subtotal)"></span>
+              </div>
+              <div class="flex justify-between py-2 text-green-600" x-show="discountAmount > 0">
+                <span>Discount <span x-show="discount.type === 'percentage'">(<span x-text="discount.value"></span>%)</span></span>
+                <span class="font-medium">-<span x-text="formatCurrency(discountAmount)"></span></span>
               </div>
               <div class="flex justify-between py-2" x-show="taxRate > 0">
                 <span class="text-gray-600">Tax (<span x-text="taxRate"></span>%)</span>

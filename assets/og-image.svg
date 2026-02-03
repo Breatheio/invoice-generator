@@ -1,0 +1,51 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e40af"/>
+      <stop offset="100%" style="stop-color:#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="200" fill="white" fill-opacity="0.05"/>
+  <circle cx="1100" cy="530" r="250" fill="white" fill-opacity="0.05"/>
+  <circle cx="900" cy="100" r="150" fill="white" fill-opacity="0.03"/>
+
+  <!-- Invoice icon -->
+  <g transform="translate(100, 180)">
+    <rect x="0" y="0" width="180" height="240" rx="12" fill="white" fill-opacity="0.95"/>
+    <rect x="20" y="30" width="100" height="12" rx="4" fill="#3b82f6"/>
+    <rect x="20" y="55" width="140" height="8" rx="3" fill="#e5e7eb"/>
+    <rect x="20" y="75" width="120" height="8" rx="3" fill="#e5e7eb"/>
+    <rect x="20" y="95" width="130" height="8" rx="3" fill="#e5e7eb"/>
+    <rect x="20" y="130" width="140" height="1" fill="#e5e7eb"/>
+    <rect x="20" y="150" width="80" height="8" rx="3" fill="#e5e7eb"/>
+    <rect x="110" y="150" width="50" height="8" rx="3" fill="#e5e7eb"/>
+    <rect x="20" y="170" width="80" height="8" rx="3" fill="#e5e7eb"/>
+    <rect x="110" y="170" width="50" height="8" rx="3" fill="#e5e7eb"/>
+    <rect x="20" y="200" width="140" height="1" fill="#e5e7eb"/>
+    <rect x="80" y="215" width="80" height="12" rx="4" fill="#10b981"/>
+  </g>
+
+  <!-- Main text -->
+  <text x="340" y="260" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="bold" fill="white">MakeInvoice</text>
+  <text x="340" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="bold" fill="#93c5fd">.online</text>
+
+  <!-- Tagline -->
+  <text x="340" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="white" fill-opacity="0.9">Free Invoice Generator</text>
+
+  <!-- Features -->
+  <g transform="translate(340, 470)" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="white" fill-opacity="0.8">
+    <circle cx="8" cy="-7" r="6" fill="#10b981"/>
+    <text x="24" y="0">Live Preview</text>
+    <circle cx="188" cy="-7" r="6" fill="#10b981"/>
+    <text x="204" y="0">PDF Download</text>
+    <circle cx="398" cy="-7" r="6" fill="#10b981"/>
+    <text x="414" y="0">No Signup</text>
+  </g>
+
+  <!-- URL at bottom -->
+  <text x="600" y="590" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="white" fill-opacity="0.6" text-anchor="middle">www.makeinvoice.online</text>
+</svg>
