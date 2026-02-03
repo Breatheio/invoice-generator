@@ -266,42 +266,105 @@ document.addEventListener('alpine:init', () => {
 
     // Print invoice
     printInvoice() {
-      // Basic validation
-      if (!this.business.name || !this.client.name) {
-        this.showToast('Please fill in business and client names', 'error');
+      const previewElement = document.getElementById('invoice-preview');
+      if (!previewElement) {
+        this.showToast('Could not find invoice preview', 'error');
         return;
       }
 
-      const previewElement = document.getElementById('invoice-preview');
-      const printWindow = window.open('', '_blank');
+      // Create a hidden iframe for printing
+      let printFrame = document.getElementById('print-frame');
+      if (!printFrame) {
+        printFrame = document.createElement('iframe');
+        printFrame.id = 'print-frame';
+        printFrame.style.position = 'absolute';
+        printFrame.style.top = '-9999px';
+        printFrame.style.left = '-9999px';
+        document.body.appendChild(printFrame);
+      }
 
-      printWindow.document.write(`
+      const printContent = `
         <!DOCTYPE html>
         <html>
         <head>
-          <title>Invoice ${this.invoice.number}</title>
-          <script src="https://cdn.tailwindcss.com"></script>
+          <title>Invoice ${this.invoice.number || 'Print'}</title>
           <style>
-            body { padding: 20px; }
-            @media print {
-              body { padding: 0; }
-            }
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family: system-ui, -apple-system, sans-serif; padding: 40px; }
+            .invoice-preview { background: white; }
+            .text-gray-900 { color: #111827; }
+            .text-gray-800 { color: #1f2937; }
+            .text-gray-700 { color: #374151; }
+            .text-gray-600 { color: #4b5563; }
+            .text-gray-500 { color: #6b7280; }
+            .text-gray-400 { color: #9ca3af; }
+            .text-green-600 { color: #059669; }
+            .text-blue-600 { color: #2563eb; }
+            .text-blue-100 { color: #dbeafe; }
+            .text-white { color: white; }
+            .font-bold { font-weight: 700; }
+            .font-semibold { font-weight: 600; }
+            .font-medium { font-weight: 500; }
+            .text-2xl { font-size: 1.5rem; }
+            .text-3xl { font-size: 1.875rem; }
+            .text-lg { font-size: 1.125rem; }
+            .text-sm { font-size: 0.875rem; }
+            .text-xs { font-size: 0.75rem; }
+            .uppercase { text-transform: uppercase; }
+            .tracking-wider { letter-spacing: 0.05em; }
+            .whitespace-pre-line { white-space: pre-line; }
+            .text-right { text-align: right; }
+            .text-center { text-align: center; }
+            .flex { display: flex; }
+            .justify-between { justify-content: space-between; }
+            .justify-end { justify-content: flex-end; }
+            .items-start { align-items: flex-start; }
+            .mt-8 { margin-top: 2rem; }
+            .mb-2 { margin-bottom: 0.5rem; }
+            .mb-4 { margin-bottom: 1rem; }
+            .mb-6 { margin-bottom: 1.5rem; }
+            .mb-8 { margin-bottom: 2rem; }
+            .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+            .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+            .pt-4 { padding-top: 1rem; }
+            .pt-6 { padding-top: 1.5rem; }
+            .pb-4 { padding-bottom: 1rem; }
+            .border-b { border-bottom: 1px solid #e5e7eb; }
+            .border-b-2 { border-bottom: 2px solid #1f2937; }
+            .border-t { border-top: 1px solid #e5e7eb; }
+            .border-t-2 { border-top: 2px solid #1f2937; }
+            .border-gray-100 { border-color: #f3f4f6; }
+            .border-gray-200 { border-color: #e5e7eb; }
+            .border-gray-800 { border-color: #1f2937; }
+            .w-full { width: 100%; }
+            .w-64 { width: 16rem; }
+            .w-20 { width: 5rem; }
+            .w-28 { width: 7rem; }
+            table { width: 100%; border-collapse: collapse; }
+            th { text-align: left; font-size: 0.875rem; font-weight: 600; color: #4b5563; padding: 0.5rem 0; border-bottom: 2px solid #e5e7eb; }
+            td { padding: 0.75rem 0; border-bottom: 1px solid #f3f4f6; }
+            .logo-preview, img { max-height: 4rem; object-fit: contain; }
+            .invoice-header { border-bottom: 2px solid #1f2937; padding-bottom: 1rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; }
+            @media print { body { padding: 20px; } }
           </style>
         </head>
         <body>
-          ${previewElement.outerHTML}
-          <script>
-            window.onload = function() {
-              setTimeout(function() {
-                window.print();
-                window.close();
-              }, 500);
-            };
-          </script>
+          ${previewElement.innerHTML}
         </body>
         </html>
-      `);
-      printWindow.document.close();
+      `;
+
+      const frameDoc = printFrame.contentWindow || printFrame.contentDocument;
+      const doc = frameDoc.document || frameDoc;
+      doc.open();
+      doc.write(printContent);
+      doc.close();
+
+      // Wait for content to load, then print
+      setTimeout(() => {
+        printFrame.contentWindow.focus();
+        printFrame.contentWindow.print();
+      }, 250);
     },
 
     // Open Paddle checkout
