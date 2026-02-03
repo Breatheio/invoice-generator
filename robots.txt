@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://makeinvoice.online/sitemap.xml
+Sitemap: https://www.makeinvoice.online/sitemap.xml
