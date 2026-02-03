@@ -3,6 +3,7 @@ const STORAGE_KEYS = {
   BUSINESS_INFO: 'invoiceApp_businessInfo',
   PREFERENCES: 'invoiceApp_preferences',
   PADDLE_CUSTOMER: 'invoiceApp_paddleCustomer',
+  DRAFT: 'invoiceApp_draft',
 };
 
 const Storage = {
@@ -76,6 +77,26 @@ const Storage = {
 
   clearPaddleCustomer() {
     return this.remove(STORAGE_KEYS.PADDLE_CUSTOMER);
+  },
+
+  // Draft auto-save
+  getDraft() {
+    return this.get(STORAGE_KEYS.DRAFT);
+  },
+
+  setDraft(draft) {
+    return this.set(STORAGE_KEYS.DRAFT, {
+      ...draft,
+      savedAt: new Date().toISOString(),
+    });
+  },
+
+  clearDraft() {
+    return this.remove(STORAGE_KEYS.DRAFT);
+  },
+
+  hasDraft() {
+    return this.get(STORAGE_KEYS.DRAFT) !== null;
   },
 };
 

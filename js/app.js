@@ -6,6 +6,8 @@ document.addEventListener('alpine:init', () => {
     isGeneratingPDF: false,
     showPricingModal: false,
     activeTab: 'form', // 'form' or 'preview' for mobile
+    draftRestored: false,
+    lastSaved: null,
 
     // Business info (your company)
     business: {
@@ -85,21 +87,31 @@ document.addEventListener('alpine:init', () => {
       this.taxRate = prefs.taxRate || 0;
       this.template = prefs.template || 'classic';
 
-      // Load saved business info for premium users
-      if (this.isPremium) {
-        const savedBusiness = Storage.getBusinessInfo();
-        if (savedBusiness.name) {
-          this.business = { ...this.business, ...savedBusiness };
+      // Try to restore draft first
+      const draft = Storage.getDraft();
+      if (draft) {
+        this.loadDraft(draft);
+        this.draftRestored = true;
+        setTimeout(() => {
+          this.showToast('Draft restored! Your previous work has been loaded.', 'success');
+        }, 500);
+      } else {
+        // Load saved business info for premium users (only if no draft)
+        if (this.isPremium) {
+          const savedBusiness = Storage.getBusinessInfo();
+          if (savedBusiness.name) {
+            this.business = { ...this.business, ...savedBusiness };
+          }
         }
+
+        // Generate default invoice number
+        this.invoice.number = this.generateInvoiceNumber();
+
+        // Set default due date (30 days from now)
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 30);
+        this.invoice.dueDate = dueDate.toISOString().split('T')[0];
       }
-
-      // Generate default invoice number
-      this.invoice.number = this.generateInvoiceNumber();
-
-      // Set default due date (30 days from now)
-      const dueDate = new Date();
-      dueDate.setDate(dueDate.getDate() + 30);
-      this.invoice.dueDate = dueDate.toISOString().split('T')[0];
 
       // Listen for premium status changes
       window.addEventListener('premiumStatusChanged', (e) => {
@@ -108,6 +120,15 @@ document.addEventListener('alpine:init', () => {
 
       // Handle ads visibility
       this.updateAdsVisibility();
+
+      // Set up auto-save (debounced)
+      this.$watch('business', () => this.debouncedSaveDraft(), { deep: true });
+      this.$watch('client', () => this.debouncedSaveDraft(), { deep: true });
+      this.$watch('invoice', () => this.debouncedSaveDraft(), { deep: true });
+      this.$watch('items', () => this.debouncedSaveDraft(), { deep: true });
+      this.$watch('discount', () => this.debouncedSaveDraft(), { deep: true });
+      this.$watch('currency', () => this.debouncedSaveDraft());
+      this.$watch('taxRate', () => this.debouncedSaveDraft());
     },
 
     // Generate invoice number
@@ -117,6 +138,85 @@ document.addEventListener('alpine:init', () => {
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
       return `INV-${year}${month}-${random}`;
+    },
+
+    // Auto-save draft
+    saveDraft() {
+      const draft = {
+        business: this.business,
+        client: this.client,
+        invoice: this.invoice,
+        items: this.items,
+        discount: this.discount,
+        currency: this.currency,
+        taxRate: this.taxRate,
+      };
+      Storage.setDraft(draft);
+      this.lastSaved = new Date();
+    },
+
+    // Debounced save (waits 1 second after last change)
+    debouncedSaveDraft: debounce(function() {
+      this.saveDraft();
+    }, 1000),
+
+    // Load draft data
+    loadDraft(draft) {
+      if (draft.business) this.business = { ...this.business, ...draft.business };
+      if (draft.client) this.client = { ...this.client, ...draft.client };
+      if (draft.invoice) this.invoice = { ...this.invoice, ...draft.invoice };
+      if (draft.items && draft.items.length > 0) this.items = draft.items;
+      if (draft.discount) this.discount = { ...this.discount, ...draft.discount };
+      if (draft.currency) this.currency = draft.currency;
+      if (draft.taxRate !== undefined) this.taxRate = draft.taxRate;
+    },
+
+    // Start new invoice (clear draft)
+    newInvoice() {
+      if (!confirm('Start a new invoice? Your current draft will be cleared.')) {
+        return;
+      }
+
+      // Clear draft from storage
+      Storage.clearDraft();
+
+      // Reset all fields
+      this.business = {
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        logo: null,
+      };
+      this.client = {
+        name: '',
+        email: '',
+        address: '',
+      };
+      this.invoice = {
+        number: this.generateInvoiceNumber(),
+        date: new Date().toISOString().split('T')[0],
+        dueDate: (() => {
+          const d = new Date();
+          d.setDate(d.getDate() + 30);
+          return d.toISOString().split('T')[0];
+        })(),
+        notes: '',
+      };
+      this.items = [{ description: '', quantity: 1, price: 0 }];
+      this.discount = { type: 'percentage', value: 0 };
+      this.taxRate = 0;
+
+      // Load business info for premium users
+      if (this.isPremium) {
+        const savedBusiness = Storage.getBusinessInfo();
+        if (savedBusiness.name) {
+          this.business = { ...this.business, ...savedBusiness };
+        }
+      }
+
+      this.draftRestored = false;
+      this.showToast('New invoice started', 'success');
     },
 
     // Line items management
@@ -373,15 +473,12 @@ document.addEventListener('alpine:init', () => {
   }));
 });
 
-// Debounce helper for preview updates
+// Debounce helper - preserves 'this' context
 function debounce(func, wait) {
   let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
+  return function(...args) {
+    const context = this;
     clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
+    timeout = setTimeout(() => func.apply(context, args), wait);
   };
 }
