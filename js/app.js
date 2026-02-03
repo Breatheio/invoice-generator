@@ -141,6 +141,8 @@ document.addEventListener('alpine:init', () => {
     },
 
     // Auto-save draft
+    _saveTimeout: null,
+
     saveDraft() {
       const draft = {
         business: this.business,
@@ -153,12 +155,16 @@ document.addEventListener('alpine:init', () => {
       };
       Storage.setDraft(draft);
       this.lastSaved = new Date();
+      console.log('Draft saved:', new Date().toLocaleTimeString());
     },
 
     // Debounced save (waits 1 second after last change)
-    debouncedSaveDraft: debounce(function() {
-      this.saveDraft();
-    }, 1000),
+    debouncedSaveDraft() {
+      clearTimeout(this._saveTimeout);
+      this._saveTimeout = setTimeout(() => {
+        this.saveDraft();
+      }, 1000);
+    },
 
     // Load draft data
     loadDraft(draft) {
