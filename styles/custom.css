@@ -222,29 +222,26 @@
 
 /* Print styles */
 @media print {
-  /* Hide everything except invoice */
-  body * {
-    visibility: hidden;
-  }
-
-  #invoice-preview,
-  #invoice-preview * {
-    visibility: visible;
-  }
-
-  #invoice-preview {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    box-shadow: none;
-    margin: 0;
-    padding: 15mm;
-    transform: none !important;
-  }
-
-  header, footer, .ad-container, .no-print, section.bg-gray-50 {
+  /* Hide everything except print container */
+  body > *:not(#print-container) {
     display: none !important;
+  }
+
+  #print-container {
+    position: static !important;
+    padding: 0 !important;
+  }
+
+  #print-container .invoice-preview {
+    box-shadow: none !important;
+    transform: none !important;
+    padding: 10mm !important;
+  }
+
+  /* Ensure colors print correctly */
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
 

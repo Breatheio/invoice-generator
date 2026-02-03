@@ -266,7 +266,40 @@ document.addEventListener('alpine:init', () => {
 
     // Print invoice
     printInvoice() {
-      window.print();
+      const preview = document.getElementById('invoice-preview');
+      if (!preview) return;
+
+      // Create print container
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = preview.outerHTML;
+
+      // Style it for printing
+      printContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        z-index: 99999;
+        padding: 20px;
+        overflow: auto;
+      `;
+
+      // Hide original content and show print container
+      document.body.style.overflow = 'hidden';
+      document.body.appendChild(printContainer);
+
+      // Print
+      setTimeout(() => {
+        window.print();
+        // Remove print container after printing
+        setTimeout(() => {
+          printContainer.remove();
+          document.body.style.overflow = '';
+        }, 500);
+      }, 100);
     },
 
     // Open Paddle checkout
