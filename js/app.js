@@ -5,9 +5,11 @@ document.addEventListener('alpine:init', () => {
     isPremium: false,
     isGeneratingPDF: false,
     showPricingModal: false,
+    showHistoryModal: false,
     activeTab: 'form', // 'form' or 'preview' for mobile
     draftRestored: false,
     lastSaved: null,
+    invoiceHistory: [],
 
     // Business info (your company)
     business: {
@@ -121,6 +123,9 @@ document.addEventListener('alpine:init', () => {
       // Handle ads visibility
       this.updateAdsVisibility();
 
+      // Load invoice history
+      this.loadHistory();
+
       // Set up auto-save (debounced)
       this.$watch('business', () => this.debouncedSaveDraft(), { deep: true });
       this.$watch('client', () => this.debouncedSaveDraft(), { deep: true });
@@ -223,6 +228,64 @@ document.addEventListener('alpine:init', () => {
 
       this.draftRestored = false;
       this.showToast('New invoice started', 'success');
+    },
+
+    // Invoice History
+    loadHistory() {
+      this.invoiceHistory = Storage.getHistory();
+    },
+
+    saveToHistory() {
+      const invoiceData = {
+        business: this.business,
+        client: this.client,
+        invoice: this.invoice,
+        items: this.items,
+        discount: this.discount,
+        currency: this.currency,
+        taxRate: this.taxRate,
+        total: this.total,
+      };
+
+      Storage.addToHistory(invoiceData);
+      this.loadHistory();
+      this.showToast('Invoice saved to history!', 'success');
+    },
+
+    loadFromHistory(id) {
+      const item = Storage.getHistoryItem(id);
+      if (!item || !item.data) {
+        this.showToast('Could not load invoice', 'error');
+        return;
+      }
+
+      // Load the invoice data
+      this.loadDraft(item.data);
+      this.showHistoryModal = false;
+      this.showToast('Invoice loaded from history', 'success');
+    },
+
+    deleteFromHistory(id) {
+      if (!confirm('Delete this invoice from history?')) return;
+      Storage.removeFromHistory(id);
+      this.loadHistory();
+      this.showToast('Invoice deleted from history', 'success');
+    },
+
+    clearAllHistory() {
+      if (!confirm('Delete ALL invoices from history? This cannot be undone.')) return;
+      Storage.clearHistory();
+      this.loadHistory();
+      this.showToast('History cleared', 'success');
+    },
+
+    formatHistoryDate(isoString) {
+      const date = new Date(isoString);
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
     },
 
     // Line items management

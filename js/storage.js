@@ -4,7 +4,10 @@ const STORAGE_KEYS = {
   PREFERENCES: 'invoiceApp_preferences',
   PADDLE_CUSTOMER: 'invoiceApp_paddleCustomer',
   DRAFT: 'invoiceApp_draft',
+  HISTORY: 'invoiceApp_history',
 };
+
+const MAX_HISTORY_ITEMS = 50; // Limit to prevent localStorage overflow
 
 const Storage = {
   // Generic get/set
@@ -97,6 +100,53 @@ const Storage = {
 
   hasDraft() {
     return this.get(STORAGE_KEYS.DRAFT) !== null;
+  },
+
+  // Invoice history
+  getHistory() {
+    return this.get(STORAGE_KEYS.HISTORY) || [];
+  },
+
+  addToHistory(invoice) {
+    const history = this.getHistory();
+
+    // Create history entry with unique ID and timestamp
+    const entry = {
+      id: Date.now().toString(),
+      savedAt: new Date().toISOString(),
+      invoiceNumber: invoice.invoice?.number || 'Unknown',
+      clientName: invoice.client?.name || 'Unknown Client',
+      total: invoice.total || 0,
+      currency: invoice.currency || 'USD',
+      data: invoice,
+    };
+
+    // Add to beginning of array
+    history.unshift(entry);
+
+    // Limit history size
+    if (history.length > MAX_HISTORY_ITEMS) {
+      history.pop();
+    }
+
+    this.set(STORAGE_KEYS.HISTORY, history);
+    return entry;
+  },
+
+  removeFromHistory(id) {
+    const history = this.getHistory();
+    const filtered = history.filter(item => item.id !== id);
+    this.set(STORAGE_KEYS.HISTORY, filtered);
+    return filtered;
+  },
+
+  clearHistory() {
+    return this.remove(STORAGE_KEYS.HISTORY);
+  },
+
+  getHistoryItem(id) {
+    const history = this.getHistory();
+    return history.find(item => item.id === id);
   },
 };
 
