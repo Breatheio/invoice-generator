@@ -1,16 +1,11 @@
 // Paddle subscription handler
-// Replace with your actual Paddle client token after account setup
 const PADDLE_CONFIG = {
-  // Set to true when you have your Paddle account ready
-  enabled: false,
-  // Your Paddle client-side token (get from Paddle dashboard)
-  clientToken: 'YOUR_PADDLE_CLIENT_TOKEN',
-  // Your Paddle environment ('sandbox' for testing, 'production' for live)
-  environment: 'sandbox',
-  // Your price IDs from Paddle dashboard
+  enabled: true,
+  clientToken: 'live_1d42f28d457f9fd61d9a1a927e6',
+  environment: 'production',
   prices: {
-    monthly: 'pri_MONTHLY_PRICE_ID',
-    yearly: 'pri_YEARLY_PRICE_ID',
+    monthly: 'pri_01kgn53966p1qcyq5afdxbsz9h',
+    yearly: 'pri_01kgn547cn6gek272rwpea4w0v',
   },
 };
 
