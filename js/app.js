@@ -231,6 +231,11 @@ document.addEventListener('alpine:init', () => {
     },
 
     // Invoice History
+    openHistory() {
+      this.invoiceHistory = Storage.getHistory();
+      this.showHistoryModal = true;
+    },
+
     loadHistory() {
       this.invoiceHistory = Storage.getHistory();
     },
