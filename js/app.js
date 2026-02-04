@@ -6,6 +6,7 @@ document.addEventListener('alpine:init', () => {
     isGeneratingPDF: false,
     showPricingModal: false,
     showHistoryModal: false,
+    showSuccessModal: false,
     activeTab: 'form', // 'form' or 'preview' for mobile
     draftRestored: false,
     lastSaved: null,
@@ -429,7 +430,13 @@ document.addEventListener('alpine:init', () => {
         const addWatermark = !this.isPremium;
 
         await PDFGenerator.generate(previewElement, filename, addWatermark);
-        this.showToast('Invoice downloaded successfully!', 'success');
+
+        // Show success modal with ad for free users, just toast for premium
+        if (!this.isPremium) {
+          this.showSuccessModal = true;
+        } else {
+          this.showToast('Invoice downloaded successfully!', 'success');
+        }
       } catch (error) {
         console.error('PDF generation failed:', error);
         this.showToast('Failed to generate PDF. Please try again.', 'error');
