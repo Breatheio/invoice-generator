@@ -271,6 +271,31 @@ document.addEventListener('alpine:init', () => {
       this.showToast('Invoice loaded from history', 'success');
     },
 
+    duplicateFromHistory(id) {
+      const item = Storage.getHistoryItem(id);
+      if (!item || !item.data) {
+        this.showToast('Could not duplicate invoice', 'error');
+        return;
+      }
+
+      // Load the invoice data
+      this.loadDraft(item.data);
+
+      // Generate new invoice number
+      this.invoice.number = this.generateInvoiceNumber();
+
+      // Set today's date
+      this.invoice.date = new Date().toISOString().split('T')[0];
+
+      // Set due date to 30 days from now
+      const dueDate = new Date();
+      dueDate.setDate(dueDate.getDate() + 30);
+      this.invoice.dueDate = dueDate.toISOString().split('T')[0];
+
+      this.showHistoryModal = false;
+      this.showToast('Invoice duplicated with new number and dates', 'success');
+    },
+
     deleteFromHistory(id) {
       if (!confirm('Delete this invoice from history?')) return;
       Storage.removeFromHistory(id);
