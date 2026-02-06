@@ -59,26 +59,6 @@
     {
       "source": "/terms",
       "destination": "/legal/terms.html"
-    },
-    {
-      "source": "/blog/how-to-create-professional-invoice",
-      "destination": "/blog/how-to-create-professional-invoice.html"
-    },
-    {
-      "source": "/blog/invoice-vs-receipt-difference",
-      "destination": "/blog/invoice-vs-receipt-difference.html"
-    },
-    {
-      "source": "/blog/freelancer-invoice-guide",
-      "destination": "/blog/freelancer-invoice-guide.html"
-    },
-    {
-      "source": "/blog/invoice-payment-terms-explained",
-      "destination": "/blog/invoice-payment-terms-explained.html"
-    },
-    {
-      "source": "/blog/what-to-include-on-invoice",
-      "destination": "/blog/what-to-include-on-invoice.html"
     }
   ]
 }
