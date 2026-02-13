@@ -403,6 +403,13 @@ document.addEventListener('alpine:init', () => {
       Storage.saveClient(this.client);
       this.loadSavedClients();
       this.showToast('Client saved!', 'success');
+
+      // Track client saved in Google Analytics
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'client_saved', {
+          'total_clients': this.savedClients.length
+        });
+      }
     },
 
     openClientManager() {
@@ -562,6 +569,18 @@ document.addEventListener('alpine:init', () => {
 
         await PDFGenerator.generate(previewElement, filename, addWatermark);
 
+        // Track invoice generation in Google Analytics
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'invoice_generated', {
+            'currency': this.currency,
+            'value': Math.round(this.total * 100) / 100,
+            'items_count': this.items.length,
+            'has_tax': this.taxRate > 0,
+            'has_discount': this.discount.value > 0,
+            'is_premium': this.isPremium
+          });
+        }
+
         // Show success modal with ad for free users, just toast for premium
         if (!this.isPremium) {
           this.showSuccessModal = true;
@@ -617,6 +636,16 @@ document.addEventListener('alpine:init', () => {
     // Open Paddle checkout
     openCheckout(plan) {
       this.showPricingModal = false;
+
+      // Track upgrade attempt in Google Analytics
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'begin_checkout', {
+          'plan': plan,
+          'currency': 'USD',
+          'value': plan === 'monthly' ? 3 : 20
+        });
+      }
+
       PaddleHandler.openCheckout(plan);
     },
 
