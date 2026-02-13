@@ -19,6 +19,9 @@ document.addEventListener('alpine:init', () => {
     showClientSuggestions: false,
     selectedSuggestionIndex: -1,
 
+    // Business profile state
+    hasBusinessProfile: false,
+
     // Business info (your company)
     business: {
       name: '',
@@ -106,12 +109,19 @@ document.addEventListener('alpine:init', () => {
           this.showToast('Draft restored! Your previous work has been loaded.', 'success');
         }, 500);
       } else {
-        // Load saved business info for premium users (only if no draft)
-        if (this.isPremium) {
-          const savedBusiness = Storage.getBusinessInfo();
-          if (savedBusiness.name) {
-            this.business = { ...this.business, ...savedBusiness };
+        // Load saved business info for all users (only if no draft)
+        const savedBusiness = Storage.getBusinessInfo();
+        if (savedBusiness.name) {
+          // Load all fields except logo for free users
+          this.business.name = savedBusiness.name;
+          this.business.email = savedBusiness.email || '';
+          this.business.phone = savedBusiness.phone || '';
+          this.business.address = savedBusiness.address || '';
+          // Only load logo for premium users
+          if (this.isPremium && savedBusiness.logo) {
+            this.business.logo = savedBusiness.logo;
           }
+          this.hasBusinessProfile = true;
         }
 
         // Generate default invoice number
@@ -229,12 +239,18 @@ document.addEventListener('alpine:init', () => {
       this.discount = { type: 'percentage', value: 0 };
       this.taxRate = 0;
 
-      // Load business info for premium users
-      if (this.isPremium) {
-        const savedBusiness = Storage.getBusinessInfo();
-        if (savedBusiness.name) {
-          this.business = { ...this.business, ...savedBusiness };
+      // Load saved business info for all users
+      const savedBusiness = Storage.getBusinessInfo();
+      if (savedBusiness.name) {
+        this.business.name = savedBusiness.name;
+        this.business.email = savedBusiness.email || '';
+        this.business.phone = savedBusiness.phone || '';
+        this.business.address = savedBusiness.address || '';
+        // Only load logo for premium users
+        if (this.isPremium && savedBusiness.logo) {
+          this.business.logo = savedBusiness.logo;
         }
+        this.hasBusinessProfile = true;
       }
 
       this.draftRestored = false;
@@ -454,25 +470,45 @@ document.addEventListener('alpine:init', () => {
       return currency.symbol;
     },
 
-    // Save business info (premium feature)
+    // Save business info (available to all users)
     saveBusinessInfo() {
-      if (!this.isPremium) {
-        this.showPricingModal = true;
+      if (!this.business.name.trim()) {
+        this.showToast('Please enter a business name first', 'error');
         return;
       }
-      Storage.setBusinessInfo(this.business);
-      this.showToast('Business info saved!', 'success');
+
+      // Save business info (logo only saved for premium users)
+      const infoToSave = {
+        name: this.business.name,
+        email: this.business.email,
+        phone: this.business.phone,
+        address: this.business.address,
+        logo: this.isPremium ? this.business.logo : null,
+      };
+
+      Storage.setBusinessInfo(infoToSave);
+      this.hasBusinessProfile = true;
+      this.showToast('Business profile saved! It will auto-fill on new invoices.', 'success');
+
+      // Track in Google Analytics
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'business_profile_saved');
+      }
     },
 
-    // Load business info (premium feature)
+    // Load business info
     loadBusinessInfo() {
-      if (!this.isPremium) {
-        this.showPricingModal = true;
-        return;
-      }
       const saved = Storage.getBusinessInfo();
       if (saved.name) {
-        this.business = { ...this.business, ...saved };
+        this.business.name = saved.name;
+        this.business.email = saved.email || '';
+        this.business.phone = saved.phone || '';
+        this.business.address = saved.address || '';
+        // Only load logo for premium users
+        if (this.isPremium && saved.logo) {
+          this.business.logo = saved.logo;
+        }
+        this.hasBusinessProfile = true;
         this.showToast('Business info loaded!', 'success');
       } else {
         this.showToast('No saved business info found', 'error');
