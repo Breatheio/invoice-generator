@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   PADDLE_CUSTOMER: 'invoiceApp_paddleCustomer',
   DRAFT: 'invoiceApp_draft',
   HISTORY: 'invoiceApp_history',
+  SAVED_CLIENTS: 'invoiceApp_savedClients',
 };
 
 const MAX_HISTORY_ITEMS = 50; // Limit to prevent localStorage overflow
@@ -147,6 +148,61 @@ const Storage = {
   getHistoryItem(id) {
     const history = this.getHistory();
     return history.find(item => item.id === id);
+  },
+
+  // Saved clients
+  getSavedClients() {
+    return this.get(STORAGE_KEYS.SAVED_CLIENTS) || [];
+  },
+
+  saveClient(client) {
+    const clients = this.getSavedClients();
+
+    // Check if client with same name already exists
+    const existingIndex = clients.findIndex(
+      c => c.name.toLowerCase() === client.name.toLowerCase()
+    );
+
+    const clientEntry = {
+      id: existingIndex >= 0 ? clients[existingIndex].id : Date.now().toString(),
+      name: client.name,
+      email: client.email || '',
+      address: client.address || '',
+      savedAt: new Date().toISOString(),
+    };
+
+    if (existingIndex >= 0) {
+      // Update existing client
+      clients[existingIndex] = clientEntry;
+    } else {
+      // Add new client at beginning
+      clients.unshift(clientEntry);
+    }
+
+    // Limit to 100 saved clients
+    if (clients.length > 100) {
+      clients.pop();
+    }
+
+    this.set(STORAGE_KEYS.SAVED_CLIENTS, clients);
+    return clientEntry;
+  },
+
+  removeClient(id) {
+    const clients = this.getSavedClients();
+    const filtered = clients.filter(c => c.id !== id);
+    this.set(STORAGE_KEYS.SAVED_CLIENTS, filtered);
+    return filtered;
+  },
+
+  searchClients(query) {
+    if (!query || query.length < 1) return [];
+    const clients = this.getSavedClients();
+    const lowerQuery = query.toLowerCase();
+    return clients.filter(c =>
+      c.name.toLowerCase().includes(lowerQuery) ||
+      c.email.toLowerCase().includes(lowerQuery)
+    ).slice(0, 5); // Return max 5 results
   },
 };
 

@@ -7,10 +7,17 @@ document.addEventListener('alpine:init', () => {
     showPricingModal: false,
     showHistoryModal: false,
     showSuccessModal: false,
+    showClientModal: false,
     activeTab: 'form', // 'form' or 'preview' for mobile
     draftRestored: false,
     lastSaved: null,
     invoiceHistory: [],
+
+    // Client autocomplete state
+    savedClients: [],
+    clientSuggestions: [],
+    showClientSuggestions: false,
+    selectedSuggestionIndex: -1,
 
     // Business info (your company)
     business: {
@@ -126,6 +133,9 @@ document.addEventListener('alpine:init', () => {
 
       // Load invoice history
       this.loadHistory();
+
+      // Load saved clients
+      this.loadSavedClients();
 
       // Set up auto-save (debounced)
       this.$watch('business', () => this.debouncedSaveDraft(), { deep: true });
@@ -317,6 +327,102 @@ document.addEventListener('alpine:init', () => {
         day: 'numeric',
         year: 'numeric'
       });
+    },
+
+    // Client autocomplete methods
+    loadSavedClients() {
+      this.savedClients = Storage.getSavedClients();
+    },
+
+    onClientNameInput(event) {
+      const query = event.target.value;
+      if (query.length >= 1) {
+        this.clientSuggestions = Storage.searchClients(query);
+        this.showClientSuggestions = this.clientSuggestions.length > 0;
+        this.selectedSuggestionIndex = -1;
+      } else {
+        this.clientSuggestions = [];
+        this.showClientSuggestions = false;
+      }
+    },
+
+    onClientNameFocus() {
+      // Show recent clients if field is empty or show matches
+      if (this.client.name.length >= 1) {
+        this.clientSuggestions = Storage.searchClients(this.client.name);
+      } else {
+        // Show last 5 clients when focused on empty field
+        this.clientSuggestions = Storage.getSavedClients().slice(0, 5);
+      }
+      this.showClientSuggestions = this.clientSuggestions.length > 0;
+      this.selectedSuggestionIndex = -1;
+    },
+
+    onClientNameBlur() {
+      // Delay hiding to allow click on suggestion
+      setTimeout(() => {
+        this.showClientSuggestions = false;
+      }, 200);
+    },
+
+    onClientNameKeydown(event) {
+      if (!this.showClientSuggestions) return;
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        this.selectedSuggestionIndex = Math.min(
+          this.selectedSuggestionIndex + 1,
+          this.clientSuggestions.length - 1
+        );
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        this.selectedSuggestionIndex = Math.max(this.selectedSuggestionIndex - 1, -1);
+      } else if (event.key === 'Enter' && this.selectedSuggestionIndex >= 0) {
+        event.preventDefault();
+        this.selectClient(this.clientSuggestions[this.selectedSuggestionIndex]);
+      } else if (event.key === 'Escape') {
+        this.showClientSuggestions = false;
+      }
+    },
+
+    selectClient(savedClient) {
+      this.client.name = savedClient.name;
+      this.client.email = savedClient.email;
+      this.client.address = savedClient.address;
+      this.showClientSuggestions = false;
+      this.selectedSuggestionIndex = -1;
+      this.showToast('Client details loaded', 'success');
+    },
+
+    saveCurrentClient() {
+      if (!this.client.name.trim()) {
+        this.showToast('Please enter a client name first', 'error');
+        return;
+      }
+
+      Storage.saveClient(this.client);
+      this.loadSavedClients();
+      this.showToast('Client saved!', 'success');
+    },
+
+    openClientManager() {
+      this.loadSavedClients();
+      this.showClientModal = true;
+    },
+
+    deleteClient(id) {
+      if (!confirm('Remove this client from saved list?')) return;
+      Storage.removeClient(id);
+      this.loadSavedClients();
+      this.showToast('Client removed', 'success');
+    },
+
+    loadClientFromManager(client) {
+      this.client.name = client.name;
+      this.client.email = client.email;
+      this.client.address = client.address;
+      this.showClientModal = false;
+      this.showToast('Client loaded', 'success');
     },
 
     // Line items management
