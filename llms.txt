@@ -1,0 +1,59 @@
+# MakeInvoice.online - Free Invoice Generator
+
+> MakeInvoice.online is a free online invoice generator that allows users to create professional PDF invoices instantly without signup.
+
+## What This Tool Does
+- Creates professional invoices in seconds
+- Generates downloadable PDF invoices
+- Calculates totals, taxes, and discounts automatically
+- Supports multiple currencies (USD, EUR, GBP, and more)
+- Works entirely in the browser - no data sent to servers
+- No account or signup required
+
+## Key Features
+- Live invoice preview as you type
+- Auto-save drafts (never lose your work)
+- Save and reuse client information
+- Save your business profile for future invoices
+- Invoice history to track past invoices
+- Custom logo upload (Premium)
+- Multiple professional templates (Premium)
+
+## How to Create an Invoice
+1. Enter your business name, email, phone, and address
+2. Enter your client's name, email, and address
+3. Add line items with descriptions, quantities, and prices
+4. Set tax rate and any discounts
+5. Click "Download PDF" to get your invoice
+
+## Pricing
+- Free: Unlimited invoices, PDF download, basic features (includes small watermark)
+- Premium ($3/month or $20/year): No watermark, custom logo, multiple currencies, premium templates
+
+## Common Questions
+
+Q: Is this invoice generator really free?
+A: Yes, the basic invoice generator is completely free. Create unlimited invoices and download PDFs without paying.
+
+Q: Do I need to create an account?
+A: No account or signup required. Your data stays in your browser.
+
+Q: What should I include on an invoice?
+A: Business name/contact, client name/address, invoice number, date, due date, itemized services/products with prices, subtotal, tax, and total amount.
+
+Q: What's the difference between an invoice and a receipt?
+A: An invoice requests payment before it's made. A receipt confirms payment after it's received.
+
+Q: What does Net 30 mean?
+A: Net 30 means payment is due within 30 days of the invoice date.
+
+## Contact
+- Website: https://makeinvoice.online
+- Support: support@makeinvoice.online
+- Blog: https://makeinvoice.online/blog/
+
+## Related Resources
+- How to Create a Professional Invoice: https://makeinvoice.online/blog/how-to-create-professional-invoice.html
+- Invoice vs Receipt Explained: https://makeinvoice.online/blog/invoice-vs-receipt-difference.html
+- Freelancer Invoice Guide: https://makeinvoice.online/blog/freelancer-invoice-guide.html
+- Payment Terms Explained: https://makeinvoice.online/blog/invoice-payment-terms-explained.html
