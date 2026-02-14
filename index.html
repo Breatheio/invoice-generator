@@ -367,12 +367,6 @@
     <div class="grid lg:grid-cols-2 gap-8">
       <!-- Left Column: Form -->
       <div :class="{ 'hidden lg:block': activeTab === 'preview' }">
-        <!-- Ad Banner (Top - Free users only) -->
-        <div x-show="!isPremium" class="ad-container mb-6">
-          <!-- AdSense Ad Unit - Replace with your ad code -->
-          <p class="text-gray-400 text-sm">Advertisement</p>
-        </div>
-
         <div class="bg-white rounded-xl shadow-lg p-6 space-y-6">
           <!-- Business Info Section -->
           <section>
@@ -700,11 +694,6 @@
           </div>
         </div>
 
-        <!-- Ad Banner (Bottom - Free users only) -->
-        <div x-show="!isPremium" class="ad-container mt-6">
-          <!-- AdSense Ad Unit - Replace with your ad code -->
-          <p class="text-gray-400 text-sm">Advertisement</p>
-        </div>
       </div>
 
       <!-- Right Column: Preview -->
@@ -1079,12 +1068,6 @@
 
           <h3 class="text-xl font-bold text-gray-900 mb-2">Invoice Downloaded!</h3>
           <p class="text-gray-600 mb-6">Your invoice has been saved to your device.</p>
-
-          <!-- Ad Container -->
-          <div class="ad-container mb-6" style="min-height: 250px;">
-            <!-- AdSense Ad Unit - Replace with your ad code -->
-            <p class="text-gray-400 text-sm">Advertisement</p>
-          </div>
 
           <!-- Action Buttons -->
           <div class="flex gap-3">
