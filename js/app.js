@@ -8,10 +8,17 @@ document.addEventListener('alpine:init', () => {
     showHistoryModal: false,
     showSuccessModal: false,
     showClientModal: false,
+    showAIModal: false,
     activeTab: 'form', // 'form' or 'preview' for mobile
     draftRestored: false,
     lastSaved: null,
     invoiceHistory: [],
+
+    // AI Prompt state
+    aiPrompt: '',
+    aiLoading: false,
+    aiError: '',
+    aiRemainingPrompts: 3,
 
     // Client autocomplete state
     savedClients: [],
@@ -146,6 +153,9 @@ document.addEventListener('alpine:init', () => {
 
       // Load saved clients
       this.loadSavedClients();
+
+      // Initialize AI prompt remaining count
+      this.updateAIRemainingPrompts();
 
       // Set up auto-save (debounced)
       this.$watch('business', () => this.debouncedSaveDraft(), { deep: true });
@@ -746,6 +756,96 @@ document.addEventListener('alpine:init', () => {
     // Get template class
     getTemplateClass() {
       return `template-${this.template}`;
+    },
+
+    // AI Prompt Methods
+    updateAIRemainingPrompts() {
+      if (window.AIPrompt) {
+        this.aiRemainingPrompts = window.AIPrompt.getRemainingPrompts();
+      }
+    },
+
+    openAIPrompt() {
+      this.updateAIRemainingPrompts();
+      this.aiPrompt = '';
+      this.aiError = '';
+      this.aiLoading = false;
+      this.showAIModal = true;
+    },
+
+    closeAIModal() {
+      this.showAIModal = false;
+      this.aiPrompt = '';
+      this.aiError = '';
+      this.aiLoading = false;
+    },
+
+    async submitAIPrompt() {
+      if (!this.aiPrompt.trim()) {
+        this.aiError = 'Please enter a description of your invoice';
+        return;
+      }
+
+      // Check usage limits for free users
+      if (!window.AIPrompt.canUsePrompt(this.isPremium)) {
+        this.aiError = "You've used all 3 free prompts today. Upgrade to Premium for unlimited AI.";
+        return;
+      }
+
+      this.aiLoading = true;
+      this.aiError = '';
+
+      try {
+        const data = await window.AIPrompt.parseInvoice(this.aiPrompt);
+
+        // Increment usage for free users
+        if (!this.isPremium) {
+          window.AIPrompt.incrementUsage();
+          this.updateAIRemainingPrompts();
+        }
+
+        // Fill the form with parsed data
+        this.fillFromAI(data);
+
+        // Close modal and show success
+        this.closeAIModal();
+        this.showToast('Invoice fields populated from your description!', 'success');
+
+        // Track in Google Analytics
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'ai_prompt_used', {
+            'is_premium': this.isPremium,
+            'items_count': data.items?.length || 0
+          });
+        }
+      } catch (error) {
+        this.aiError = error.message || 'Failed to process your request. Please try again.';
+      } finally {
+        this.aiLoading = false;
+      }
+    },
+
+    fillFromAI(data) {
+      // Fill client info
+      if (data.client) {
+        if (data.client.name) this.client.name = data.client.name;
+        if (data.client.email) this.client.email = data.client.email;
+        if (data.client.address) this.client.address = data.client.address;
+      }
+
+      // Fill line items
+      if (data.items && data.items.length > 0) {
+        this.items = data.items.map(item => ({
+          description: item.description || '',
+          quantity: parseFloat(item.quantity) || 1,
+          price: parseFloat(item.price) || 0,
+        }));
+      }
+
+      // Fill invoice notes if provided
+      if (data.invoice && data.invoice.notes) {
+        this.invoice.notes = data.invoice.notes;
+      }
     },
   }));
 });

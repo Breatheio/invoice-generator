@@ -392,3 +392,39 @@ html {
 .prose li {
   margin-bottom: 0.5rem;
 }
+
+/* AI Prompt Button */
+.ai-prompt-btn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(139, 92, 246, 0.39);
+}
+
+.ai-prompt-btn:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+  box-shadow: 0 6px 20px 0 rgba(139, 92, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+.ai-prompt-btn:active {
+  transform: translateY(0);
+}
+
+/* AI Generate Button */
+.ai-generate-btn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+}
+
+.ai-generate-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+}
+
+.ai-generate-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* AI Modal styles */
+.ai-modal-header {
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+}
