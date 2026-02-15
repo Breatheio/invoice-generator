@@ -1,0 +1,5 @@
+
+# Local dev
+local-server.py
+__pycache__/
+*.pyc
