@@ -26,7 +26,7 @@ TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
 
 # Directories
 BASE_DIR = Path(__file__).parent.parent
-BLOG_DIR = BASE_DIR / 'blog' / 'posts'
+BLOG_DIR = BASE_DIR / 'blog'  # HTML files go directly in /blog/
 LANDING_DIR = BASE_DIR / 'landing-pages'
 TRACKING_FILE = BASE_DIR / 'agents' / '.content_tracking.json'
 
@@ -142,8 +142,8 @@ def call_claude(system: str, user: str, max_tokens: int = 4096) -> str:
     return data['content'][0]['text']
 
 
-def generate_blog_article(topic: dict) -> str:
-    """Generate a full SEO-optimized blog article."""
+def generate_blog_article(topic: dict) -> dict:
+    """Generate a full SEO-optimized blog article as HTML."""
     system = """You are an expert content writer for MakeInvoice.online, a free online invoice generator.
 
 Write a comprehensive, helpful blog post that:
@@ -156,19 +156,56 @@ Write a comprehensive, helpful blog post that:
 7. Naturally mentions MakeInvoice.online where relevant (1-2 times max, not forced)
 8. Ends with a clear but subtle CTA
 
-Format in Markdown with:
-- Meta description as HTML comment at top: <!-- meta: description here -->
-- Clear H2 and H3 structure
-- FAQ section at end
+IMPORTANT: Return your response as JSON with this exact structure:
+{
+  "title": "The exact H1 title for the article",
+  "meta_description": "A 150-160 character meta description",
+  "read_time": "X min read",
+  "content_html": "The full article body HTML (no <html>, <head>, <body> tags - just the content with <h2>, <h3>, <p>, <ul>, <li>, etc.)"
+}
 
-Write like a helpful expert, not a salesperson."""
+For content_html, use these HTML patterns:
+- <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Heading</h2>
+- <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">Subheading</h3>
+- <p class="text-gray-600 mb-4">Paragraph text</p>
+- <ul class="list-disc list-inside text-gray-600 mb-6 space-y-2"><li>Item</li></ul>
+- <ol class="list-decimal list-inside text-gray-600 mb-6 space-y-2"><li>Item</li></ol>
+- For first answer paragraph: <p class="text-lg text-gray-600 mb-4"><strong>Direct answer:</strong> text here</p>
+
+Include a CTA box in the middle using:
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-6 my-8">
+  <h3 class="text-lg font-bold text-gray-900 mb-2">Create Your Invoice Now</h3>
+  <p class="text-gray-600 mb-4">Use our free invoice generator. Professional templates, no signup required.</p>
+  <a href="../" class="inline-block bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">Create Free Invoice &rarr;</a>
+</div>
+
+Write like a helpful expert, not a salesperson. Return ONLY valid JSON."""
 
     user = f"""Write a blog post about: {topic.get('title', topic.get('keyword'))}
 Target keyword: {topic.get('keyword', '')}
 
-Remember to be genuinely helpful. The goal is to rank #1 and become a trusted resource."""
+Remember to be genuinely helpful. The goal is to rank #1 and become a trusted resource.
 
-    return call_claude(system, user, max_tokens=4096)
+Return ONLY the JSON object, no other text."""
+
+    result = call_claude(system, user, max_tokens=6000)
+
+    # Parse JSON from response
+    try:
+        # Try to find JSON in the response
+        json_match = re.search(r'\{[\s\S]*\}', result)
+        if json_match:
+            return json.loads(json_match.group())
+    except json.JSONDecodeError:
+        pass
+
+    # Fallback if JSON parsing fails
+    return {
+        "title": topic.get('title', topic.get('keyword', 'Article')),
+        "meta_description": f"Learn about {topic.get('keyword', 'invoicing')} with this comprehensive guide.",
+        "read_time": "5 min read",
+        "content_html": f"<p class='text-gray-600 mb-4'>{result[:2000]}</p>"
+    }
 
 
 def generate_landing_page(page: dict) -> str:
@@ -212,6 +249,197 @@ Template type: {page.get('template_type', 'general')}
 URL slug: /{page['slug']}"""
 
     return call_claude(system, user, max_tokens=5000)
+
+
+def wrap_blog_html(article_data: dict, slug: str) -> str:
+    """Wrap article content in full HTML template."""
+    title = article_data.get('title', 'Article')
+    meta_desc = article_data.get('meta_description', '')
+    read_time = article_data.get('read_time', '5 min read')
+    content_html = article_data.get('content_html', '')
+    date_str = datetime.now().strftime('%Y-%m-%d')
+    date_display = datetime.now().strftime('%B %Y')
+
+    return f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title} | MakeInvoice.online</title>
+  <meta name="description" content="{meta_desc}">
+
+  <!-- Open Graph / Social -->
+  <meta property="og:title" content="{title}">
+  <meta property="og:description" content="{meta_desc}">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.makeinvoice.online/blog/{slug}">
+  <meta property="og:image" content="https://www.makeinvoice.online/assets/og-image.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{title}">
+  <meta name="twitter:description" content="{meta_desc}">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://www.makeinvoice.online/blog/{slug}">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {{
+      theme: {{
+        extend: {{
+          colors: {{
+            primary: {{
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }}
+          }}
+        }}
+      }}
+    }}
+  </script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="../styles/custom.css">
+
+  <!-- JSON-LD Article Schema -->
+  <script type="application/ld+json">
+  {{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "{title}",
+    "description": "{meta_desc}",
+    "image": "https://makeinvoice.online/assets/og-image.png",
+    "author": {{
+      "@type": "Organization",
+      "name": "MakeInvoice.online"
+    }},
+    "publisher": {{
+      "@type": "Organization",
+      "name": "MakeInvoice.online",
+      "logo": {{
+        "@type": "ImageObject",
+        "url": "https://makeinvoice.online/assets/logo.svg"
+      }}
+    }},
+    "datePublished": "{date_str}",
+    "dateModified": "{date_str}",
+    "mainEntityOfPage": {{
+      "@type": "WebPage",
+      "@id": "https://makeinvoice.online/blog/{slug}.html"
+    }}
+  }}
+  </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <header class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo -->
+        <a href="../" class="flex items-center space-x-3">
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <span class="text-xl font-bold text-gray-900">MakeInvoice<span class="text-blue-600">.online</span></span>
+        </a>
+
+        <!-- Navigation -->
+        <nav class="flex items-center space-x-6">
+          <a href="../" class="text-gray-600 hover:text-blue-600 font-medium">Invoice Generator</a>
+          <a href="./" class="text-blue-600 font-medium">Blog</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Article Content -->
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-500 mb-8">
+      <a href="./" class="hover:text-blue-600">Blog</a>
+      <span class="mx-2">/</span>
+      <span class="text-gray-900">{title[:50]}...</span>
+    </nav>
+
+    <article class="bg-white rounded-xl shadow-lg p-8 md:p-12">
+      <!-- Article Header -->
+      <header class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{title}</h1>
+        <div class="flex items-center text-gray-500 text-sm">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>{read_time}</span>
+          <span class="mx-3">|</span>
+          <span>Updated {date_display}</span>
+        </div>
+      </header>
+
+      <!-- Article Body -->
+      <div class="prose max-w-none">
+        {content_html}
+      </div>
+
+      <!-- Final CTA -->
+      <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-8 mt-12 text-center text-white">
+        <h3 class="text-2xl font-bold mb-3">Ready to Create Your Invoice?</h3>
+        <p class="text-blue-100 mb-6">Professional invoices in seconds. Free, no signup required.</p>
+        <a href="../" class="inline-block bg-white text-blue-600 font-semibold px-8 py-3 rounded-lg hover:bg-blue-50 transition-colors">
+          Create Free Invoice &rarr;
+        </a>
+      </div>
+    </article>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-gray-200 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <div class="flex items-center space-x-2 mb-4">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span class="font-bold text-gray-900">MakeInvoice.online</span>
+          </div>
+          <p class="text-sm text-gray-600">Create professional invoices for free. Easy-to-use invoice generator with live preview and PDF download.</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-4">Quick Links</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="../" class="text-gray-600 hover:text-blue-600">Invoice Generator</a></li>
+            <li><a href="./" class="text-gray-600 hover:text-blue-600">Blog</a></li>
+            <li><a href="../legal/privacy.html" class="text-gray-600 hover:text-blue-600">Privacy Policy</a></li>
+            <li><a href="../legal/terms.html" class="text-gray-600 hover:text-blue-600">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-4">Support</h3>
+          <p class="text-sm text-gray-600 mb-2">Need help? Contact us at:</p>
+          <a href="mailto:support@makeinvoice.online" class="text-blue-600 hover:underline">support@makeinvoice.online</a>
+        </div>
+      </div>
+      <div class="border-t border-gray-200 mt-8 pt-8 text-center text-sm text-gray-500">
+        <p>&copy; 2025 MakeInvoice.online. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
+'''
 
 
 def review_content(content: str, content_type: str) -> dict:
@@ -266,40 +494,36 @@ def run_keyword_mode():
     for topic in selected:
         print(f"   ✍️ Writing: {topic['title']}")
 
-        article = generate_blog_article(topic)
-        review = review_content(article, "blog article")
+        article_data = generate_blog_article(topic)
+        review = review_content(article_data.get('content_html', ''), "blog article")
 
         if review.get('score', 0) < 5:
             print(f"   ⚠️ Low quality score, regenerating...")
-            article = generate_blog_article(topic)
+            article_data = generate_blog_article(topic)
 
-        # Save article
+        # Generate slug from title
+        slug = re.sub(r'[^a-z0-9]+', '-', topic['title'].lower()).strip('-')[:60]
+
+        # Wrap content in HTML template
+        full_html = wrap_blog_html(article_data, slug)
+
+        # Save as HTML
         BLOG_DIR.mkdir(parents=True, exist_ok=True)
-        slug = re.sub(r'[^a-z0-9]+', '-', topic['title'].lower()).strip('-')[:50]
-        date_str = datetime.now().strftime('%Y-%m-%d')
-        filename = f"{date_str}-{slug}.md"
+        filename = f"{slug}.html"
         filepath = BLOG_DIR / filename
 
-        frontmatter = f"""---
-title: "{topic['title']}"
-date: {date_str}
-keyword: "{topic['keyword']}"
-type: keyword-article
-status: draft
----
-
-"""
         with open(filepath, 'w') as f:
-            f.write(frontmatter + article)
+            f.write(full_html)
 
         # Track it
         tracking["created_keywords"].append(topic['keyword'])
         save_tracking(tracking)
 
         articles_created.append({
-            'title': topic['title'],
+            'title': article_data.get('title', topic['title']),
             'keyword': topic['keyword'],
             'file': filename,
+            'slug': slug,
             'score': review.get('score', 'N/A')
         })
 
@@ -373,26 +597,22 @@ def run_evergreen_mode():
     print(f"   ✍️ Writing: {selected}")
 
     topic = {"title": selected, "keyword": selected.lower()}
-    article = generate_blog_article(topic)
-    review = review_content(article, "blog article")
+    article_data = generate_blog_article(topic)
+    review = review_content(article_data.get('content_html', ''), "blog article")
 
-    # Save article
+    # Generate slug from title
+    slug = re.sub(r'[^a-z0-9]+', '-', selected.lower()).strip('-')[:60]
+
+    # Wrap content in HTML template
+    full_html = wrap_blog_html(article_data, slug)
+
+    # Save as HTML
     BLOG_DIR.mkdir(parents=True, exist_ok=True)
-    slug = re.sub(r'[^a-z0-9]+', '-', selected.lower()).strip('-')[:50]
-    date_str = datetime.now().strftime('%Y-%m-%d')
-    filename = f"{date_str}-{slug}.md"
+    filename = f"{slug}.html"
     filepath = BLOG_DIR / filename
 
-    frontmatter = f"""---
-title: "{selected}"
-date: {date_str}
-type: evergreen
-status: draft
----
-
-"""
     with open(filepath, 'w') as f:
-        f.write(frontmatter + article)
+        f.write(full_html)
 
     tracking["created_evergreen"].append(selected)
     save_tracking(tracking)
@@ -400,8 +620,9 @@ status: draft
     print(f"   ✅ Saved: {filename}")
 
     return [{
-        'title': selected,
+        'title': article_data.get('title', selected),
         'file': filename,
+        'slug': slug,
         'score': review.get('score', 'N/A')
     }]
 
@@ -498,15 +719,17 @@ def main():
                 summary += f"  Source: {r['source']}\n"
             summary += f"  Quality: {r.get('score', 'N/A')}/10\n"
             # Add live URL
-            if r.get('file'):
-                slug = r['file'].replace('.md', '').replace('.html', '')
-                # Remove date prefix if present (e.g., 2026-02-15-)
-                if len(slug) > 11 and slug[4] == '-' and slug[7] == '-' and slug[10] == '-':
-                    slug = slug[11:]
-                if r.get('type') == 'landing' or r.get('file', '').endswith('.html'):
+            if r.get('slug'):
+                slug = r['slug']
+                if r.get('type') == 'landing':
                     url = f"https://www.makeinvoice.online/{slug}"
                 else:
-                    url = f"https://www.makeinvoice.online/blog/{slug}"
+                    url = f"https://www.makeinvoice.online/blog/{slug}.html"
+                summary += f"  🔗 [View]({url})\n"
+            elif r.get('file'):
+                # Fallback for landing pages
+                slug = r['file'].replace('.html', '')
+                url = f"https://www.makeinvoice.online/{slug}"
                 summary += f"  🔗 [View]({url})\n"
             summary += "\n"
         summary += "✅ Auto-published to site!"
