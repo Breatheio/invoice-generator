@@ -496,9 +496,8 @@ def main():
                 summary += f"  Keyword: {r['keyword']}\n"
             if r.get('source'):
                 summary += f"  Source: {r['source']}\n"
-            summary += f"  Quality: {r.get('score', 'N/A')}/10\n"
-            summary += f"  File: `{r.get('file', 'unknown')}`\n\n"
-        summary += "Review and merge the PR to publish."
+            summary += f"  Quality: {r.get('score', 'N/A')}/10\n\n"
+        summary += "✅ Auto-published to site!"
         send_telegram(summary)
     else:
         send_telegram(f"📭 *Content Engine*\n\nNo new {content_type} created this run.")

@@ -65,42 +65,14 @@ jobs:
         run: |
           python agents/content_engine.py ${{ steps.mode.outputs.mode }}
 
-      - name: Check for new content
-        id: check_changes
+      - name: Auto-commit and push
         run: |
-          if [[ -n $(git status --porcelain) ]]; then
-            echo "has_changes=true" >> $GITHUB_OUTPUT
+          git config --local user.email "bot@makeinvoice.online"
+          git config --local user.name "Content Engine Bot"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
           else
-            echo "has_changes=false" >> $GITHUB_OUTPUT
+            git commit -m "content: Add new ${{ steps.mode.outputs.mode }} content [auto]"
+            git push
           fi
-
-      - name: Create Pull Request
-        if: steps.check_changes.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "content: Add new ${{ steps.mode.outputs.mode }} content"
-          title: "📝 New Content: ${{ steps.mode.outputs.mode }} (${{ github.run_number }})"
-          body: |
-            ## Content Engine Results
-
-            **Mode:** ${{ steps.mode.outputs.mode }}
-            **Generated:** $(date)
-
-            ### Review Checklist
-            - [ ] Content is accurate and helpful
-            - [ ] SEO optimization looks good
-            - [ ] No excessive product promotion
-            - [ ] Grammar and readability OK
-
-            **To publish:** Merge this PR
-            **To reject:** Close this PR
-
-            ---
-            *Generated automatically by Content Engine*
-          branch: content/${{ steps.mode.outputs.mode }}-${{ github.run_number }}
-          delete-branch: true
-          labels: |
-            content
-            auto-generated
-            ${{ steps.mode.outputs.mode }}
