@@ -2,12 +2,12 @@ name: Content Engine
 
 on:
   schedule:
-    # Monday 9am UTC - Question Discovery (with fallback to keywords)
-    - cron: '0 9 * * 1'
-    # Wednesday 9am UTC - Keyword-targeted articles
-    - cron: '0 9 * * 3'
-    # Friday 9am UTC - Landing pages
-    - cron: '0 9 * * 5'
+    # Monday 4am Israel time (02:00 UTC) - Question Discovery (with fallback to keywords)
+    - cron: '0 2 * * 1'
+    # Wednesday 4am Israel time (02:00 UTC) - Keyword-targeted articles
+    - cron: '0 2 * * 3'
+    # Friday 4am Israel time (02:00 UTC) - Landing pages
+    - cron: '0 2 * * 5'
   workflow_dispatch:
     inputs:
       mode:
