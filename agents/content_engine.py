@@ -496,7 +496,19 @@ def main():
                 summary += f"  Keyword: {r['keyword']}\n"
             if r.get('source'):
                 summary += f"  Source: {r['source']}\n"
-            summary += f"  Quality: {r.get('score', 'N/A')}/10\n\n"
+            summary += f"  Quality: {r.get('score', 'N/A')}/10\n"
+            # Add live URL
+            if r.get('file'):
+                slug = r['file'].replace('.md', '').replace('.html', '')
+                # Remove date prefix if present (e.g., 2026-02-15-)
+                if len(slug) > 11 and slug[4] == '-' and slug[7] == '-' and slug[10] == '-':
+                    slug = slug[11:]
+                if r.get('type') == 'landing' or r.get('file', '').endswith('.html'):
+                    url = f"https://www.makeinvoice.online/{slug}"
+                else:
+                    url = f"https://www.makeinvoice.online/blog/{slug}"
+                summary += f"  🔗 [View]({url})\n"
+            summary += "\n"
         summary += "✅ Auto-published to site!"
         send_telegram(summary)
     else:
