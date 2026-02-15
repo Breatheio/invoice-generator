@@ -1,0 +1,75 @@
+name: Question Discovery Agent
+
+on:
+  schedule:
+    # Run every Monday at 9am UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  discover-and-write:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Run Question Discovery Agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+        run: |
+          python agents/question_discovery.py
+
+      - name: Check for new articles
+        id: check_changes
+        run: |
+          if [[ -n $(git status --porcelain blog/) ]]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "content: Add new blog articles from Question Discovery Agent"
+          title: "📝 New Blog Articles Ready for Review"
+          body: |
+            ## Question Discovery Agent Results
+
+            The agent found relevant questions and generated blog articles.
+
+            **Please review:**
+            - [ ] Article accuracy and helpfulness
+            - [ ] SEO optimization (title, headings, keywords)
+            - [ ] Natural product mentions (not too salesy)
+            - [ ] Grammar and readability
+
+            **To publish:** Merge this PR
+            **To reject:** Close this PR
+
+            ---
+            *Generated automatically by the Question Discovery Agent*
+          branch: content/question-discovery-${{ github.run_number }}
+          delete-branch: true
+          labels: |
+            content
+            auto-generated
+            needs-review
