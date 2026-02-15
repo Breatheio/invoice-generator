@@ -2,7 +2,37 @@
 
 Automated agents for continuous SEO/AEO optimization.
 
-## Question Discovery Agent
+## Content Schedule
+
+| Day | Mode | What it creates |
+|-----|------|-----------------|
+| **Monday** | `questions` | Blog articles from Reddit/Quora questions |
+| **Wednesday** | `keywords` | SEO articles targeting specific keywords |
+| **Friday** | `landing` | Industry/template landing pages |
+
+## Content Engine
+
+The unified content generation system. Runs automatically 3x per week.
+
+### Modes
+
+- **questions**: Finds Reddit/Quora questions → generates answer articles
+- **keywords**: Targets specific SEO keywords (15+ pre-defined topics)
+- **landing**: Creates industry-specific landing pages (14 industries)
+- **evergreen**: Creates timeless how-to content
+- **mixed**: Combination of keywords + evergreen
+
+### Fallback Logic
+
+If `questions` mode finds no new questions, it automatically falls back to `keywords` mode so you always get content.
+
+### Manual Run
+
+Go to Actions → Content Engine → Run workflow → Select mode
+
+---
+
+## Question Discovery Agent (Legacy)
 
 Runs weekly to find questions people ask about invoicing and generate blog articles.
 

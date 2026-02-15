@@ -1,0 +1,106 @@
+name: Content Engine
+
+on:
+  schedule:
+    # Monday 9am UTC - Question Discovery (with fallback to keywords)
+    - cron: '0 9 * * 1'
+    # Wednesday 9am UTC - Keyword-targeted articles
+    - cron: '0 9 * * 3'
+    # Friday 9am UTC - Landing pages
+    - cron: '0 9 * * 5'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Content mode'
+        required: true
+        default: 'keywords'
+        type: choice
+        options:
+          - questions
+          - keywords
+          - landing
+          - evergreen
+          - mixed
+
+jobs:
+  generate-content:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Determine mode from schedule
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "mode=${{ inputs.mode }}" >> $GITHUB_OUTPUT
+          else
+            DAY=$(date +%u)
+            case $DAY in
+              1) echo "mode=questions" >> $GITHUB_OUTPUT ;;
+              3) echo "mode=keywords" >> $GITHUB_OUTPUT ;;
+              5) echo "mode=landing" >> $GITHUB_OUTPUT ;;
+              *) echo "mode=keywords" >> $GITHUB_OUTPUT ;;
+            esac
+          fi
+
+      - name: Run Content Engine
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+        run: |
+          python agents/content_engine.py ${{ steps.mode.outputs.mode }}
+
+      - name: Check for new content
+        id: check_changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "content: Add new ${{ steps.mode.outputs.mode }} content"
+          title: "📝 New Content: ${{ steps.mode.outputs.mode }} (${{ github.run_number }})"
+          body: |
+            ## Content Engine Results
+
+            **Mode:** ${{ steps.mode.outputs.mode }}
+            **Generated:** $(date)
+
+            ### Review Checklist
+            - [ ] Content is accurate and helpful
+            - [ ] SEO optimization looks good
+            - [ ] No excessive product promotion
+            - [ ] Grammar and readability OK
+
+            **To publish:** Merge this PR
+            **To reject:** Close this PR
+
+            ---
+            *Generated automatically by Content Engine*
+          branch: content/${{ steps.mode.outputs.mode }}-${{ github.run_number }}
+          delete-branch: true
+          labels: |
+            content
+            auto-generated
+            ${{ steps.mode.outputs.mode }}
