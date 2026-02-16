@@ -59,6 +59,74 @@ def add_to_sitemap(url: str, page_type: str = 'blog'):
     SITEMAP_FILE.write_text(sitemap)
     print(f"   📍 Added to sitemap: {url}")
 
+
+BLOG_INDEX_FILE = BLOG_DIR / 'index.html'
+
+# Gradient colors for article cards
+GRADIENT_COLORS = [
+    'from-blue-500 to-blue-600',
+    'from-green-500 to-green-600',
+    'from-purple-500 to-purple-600',
+    'from-orange-500 to-orange-600',
+    'from-teal-500 to-teal-600',
+    'from-red-500 to-red-600',
+    'from-amber-500 to-amber-600',
+    'from-indigo-500 to-indigo-600',
+    'from-cyan-500 to-cyan-600',
+    'from-rose-500 to-rose-600',
+    'from-fuchsia-500 to-fuchsia-600',
+    'from-yellow-500 to-yellow-600',
+    'from-emerald-500 to-emerald-600',
+    'from-sky-500 to-sky-600',
+    'from-violet-500 to-violet-600',
+]
+
+
+def add_to_blog_index(title: str, filename: str, description: str):
+    """Add a new article card to the blog index page."""
+    if not BLOG_INDEX_FILE.exists():
+        return
+
+    index_html = BLOG_INDEX_FILE.read_text()
+
+    # Check if article already exists
+    if filename in index_html:
+        return
+
+    # Pick a random gradient color
+    gradient = random.choice(GRADIENT_COLORS)
+
+    article_card = f'''
+      <!-- Auto-generated article -->
+      <article class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+        <div class="h-48 bg-gradient-to-br {gradient} flex items-center justify-center">
+          <svg class="w-20 h-20 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+        <div class="p-6">
+          <div class="flex items-center text-sm text-gray-500 mb-3">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>6 min read</span>
+          </div>
+          <h2 class="text-xl font-bold text-gray-900 mb-2">
+            <a href="/blog/{filename}" class="hover:text-blue-600">{title}</a>
+          </h2>
+          <p class="text-gray-600 mb-4">{description[:120]}...</p>
+          <a href="/blog/{filename}" class="text-blue-600 font-medium hover:text-blue-700">Read more &rarr;</a>
+        </div>
+      </article>
+
+    </div>'''
+
+    # Insert before closing </div> of the grid
+    index_html = index_html.replace('\n    </div>\n  </main>', article_card + '\n  </main>')
+    BLOG_INDEX_FILE.write_text(index_html)
+    print(f"   📰 Added to blog index: {title}")
+
+
 # Content ideas bank
 KEYWORD_TOPICS = [
     {"keyword": "freelance invoice template", "title": "Free Freelance Invoice Template (2026)", "type": "blog"},
@@ -558,8 +626,13 @@ def run_keyword_mode():
 
         print(f"   ✅ Saved: {filename}")
 
-        # Add to sitemap
+        # Add to sitemap and blog index
         add_to_sitemap(f"https://www.makeinvoice.online/blog/{filename}", 'blog')
+        add_to_blog_index(
+            article_data.get('title', topic['title']),
+            filename,
+            article_data.get('meta_description', f"Learn about {topic['keyword']} in this comprehensive guide.")
+        )
 
     return articles_created
 
@@ -651,8 +724,13 @@ def run_evergreen_mode():
 
     print(f"   ✅ Saved: {filename}")
 
-    # Add to sitemap
+    # Add to sitemap and blog index
     add_to_sitemap(f"https://www.makeinvoice.online/blog/{filename}", 'blog')
+    add_to_blog_index(
+        article_data.get('title', selected),
+        filename,
+        article_data.get('meta_description', f"Learn about {selected.lower()} in this comprehensive guide.")
+    )
 
     return [{
         'title': article_data.get('title', selected),
