@@ -29,6 +29,35 @@ BASE_DIR = Path(__file__).parent.parent
 BLOG_DIR = BASE_DIR / 'blog'  # HTML files go directly in /blog/
 LANDING_DIR = BASE_DIR / 'landing-pages'
 TRACKING_FILE = BASE_DIR / 'agents' / '.content_tracking.json'
+SITEMAP_FILE = BASE_DIR / 'sitemap.xml'
+
+
+def add_to_sitemap(url: str, page_type: str = 'blog'):
+    """Add a new URL to the sitemap."""
+    if not SITEMAP_FILE.exists():
+        return
+
+    sitemap = SITEMAP_FILE.read_text()
+
+    # Check if URL already exists
+    if url in sitemap:
+        return
+
+    date_str = datetime.now().strftime('%Y-%m-%d')
+    priority = '0.7' if page_type == 'blog' else '0.8'
+
+    new_entry = f'''  <url>
+    <loc>{url}</loc>
+    <lastmod>{date_str}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>{priority}</priority>
+  </url>
+</urlset>'''
+
+    # Insert before closing </urlset>
+    sitemap = sitemap.replace('</urlset>', new_entry)
+    SITEMAP_FILE.write_text(sitemap)
+    print(f"   📍 Added to sitemap: {url}")
 
 # Content ideas bank
 KEYWORD_TOPICS = [
@@ -529,6 +558,9 @@ def run_keyword_mode():
 
         print(f"   ✅ Saved: {filename}")
 
+        # Add to sitemap
+        add_to_sitemap(f"https://www.makeinvoice.online/blog/{filename}", 'blog')
+
     return articles_created
 
 
@@ -618,6 +650,9 @@ def run_evergreen_mode():
     save_tracking(tracking)
 
     print(f"   ✅ Saved: {filename}")
+
+    # Add to sitemap
+    add_to_sitemap(f"https://www.makeinvoice.online/blog/{filename}", 'blog')
 
     return [{
         'title': article_data.get('title', selected),
