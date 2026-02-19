@@ -1,0 +1,64 @@
+name: GSC Performance Monitor
+
+on:
+  schedule:
+    # Every Sunday at 6am Israel time (04:00 UTC)
+    - cron: '0 4 * * 0'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Run mode'
+        required: true
+        default: 'optimize'
+        type: choice
+        options:
+          - optimize   # Apply changes automatically
+          - report     # Report only, no changes
+
+permissions:
+  contents: write
+
+jobs:
+  gsc-monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests cryptography
+
+      - name: Run GSC Monitor
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+        run: |
+          if [ "${{ github.event.inputs.mode }}" == "report" ]; then
+            python agents/gsc_monitor.py --report
+          else
+            python agents/gsc_monitor.py
+          fi
+
+      - name: Commit and push optimized pages
+        run: |
+          git config --local user.email "bot@makeinvoice.online"
+          git config --local user.name "GSC Monitor Bot"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "seo: Auto-optimize titles/metas from GSC data [auto]"
+            git push
+          fi
