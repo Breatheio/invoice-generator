@@ -1,0 +1,45 @@
+name: Schema Injector
+
+on:
+  workflow_dispatch: {}   # Manual trigger (one-time bulk run + on-demand)
+
+permissions:
+  contents: write
+
+jobs:
+  inject-schema:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run Schema Injector
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python agents/schema_injector.py
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "bot@makeinvoice.online"
+          git config --local user.name "Schema Injector Bot"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "seo: Inject FAQ schema into blog posts [auto]"
+            git push
+          fi

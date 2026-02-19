@@ -69,6 +69,14 @@ jobs:
         run: |
           python agents/content_engine.py ${{ steps.mode.outputs.mode }}
 
+      - name: Inject FAQ schema into new posts
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python agents/schema_injector.py
+
       - name: Auto-commit and push
         run: |
           git config --local user.email "bot@makeinvoice.online"
