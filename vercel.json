@@ -53,6 +53,10 @@
   ],
   "rewrites": [
     {
+      "source": "/blog",
+      "destination": "/blog/index.html"
+    },
+    {
       "source": "/privacy",
       "destination": "/legal/privacy.html"
     },
