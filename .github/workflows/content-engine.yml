@@ -88,3 +88,13 @@ jobs:
             git commit -m "content: Add new ${{ steps.mode.outputs.mode }} content [auto]"
             git push
           fi
+
+      - name: Wait for Vercel deployment
+        run: sleep 60
+
+      - name: Submit new URLs to search engines
+        env:
+          INDEXNOW_KEY: makeinvoice-indexnow-key
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python agents/auto_index.py
