@@ -435,7 +435,7 @@ def wrap_blog_html(article_data: dict, slug: str) -> str:
     "dateModified": "{date_str}",
     "mainEntityOfPage": {{
       "@type": "WebPage",
-      "@id": "https://makeinvoice.online/blog/{slug}.html"
+      "@id": "https://www.makeinvoice.online/blog/{slug}"
     }}
   }}
   </script>
@@ -493,10 +493,10 @@ def wrap_blog_html(article_data: dict, slug: str) -> str:
         <div class="bg-gray-50 rounded-lg p-6 mt-8">
           <h3 class="text-lg font-bold text-gray-900 mb-4">Related Articles</h3>
           <ul class="space-y-3">
-            <li><a href="/blog/invoice-payment-terms-explained.html" class="text-blue-600 hover:underline">Invoice Payment Terms Explained →</a></li>
-            <li><a href="/blog/freelancer-invoice-guide.html" class="text-blue-600 hover:underline">Complete Freelancer Invoice Guide →</a></li>
-            <li><a href="/blog/how-to-create-professional-invoice.html" class="text-blue-600 hover:underline">How to Create a Professional Invoice →</a></li>
-            <li><a href="/blog/what-to-include-on-invoice.html" class="text-blue-600 hover:underline">What to Include on an Invoice →</a></li>
+            <li><a href="/blog/invoice-payment-terms-explained" class="text-blue-600 hover:underline">Invoice Payment Terms Explained →</a></li>
+            <li><a href="/blog/freelancer-invoice-guide" class="text-blue-600 hover:underline">Complete Freelancer Invoice Guide →</a></li>
+            <li><a href="/blog/how-to-create-professional-invoice" class="text-blue-600 hover:underline">How to Create a Professional Invoice →</a></li>
+            <li><a href="/blog/what-to-include-on-invoice" class="text-blue-600 hover:underline">What to Include on an Invoice →</a></li>
           </ul>
         </div>
       </div>
@@ -638,7 +638,7 @@ def run_keyword_mode():
         print(f"   ✅ Saved: {filename}")
 
         # Add to sitemap and blog index
-        add_to_sitemap(f"https://www.makeinvoice.online/blog/{filename}", 'blog')
+        add_to_sitemap(f"https://www.makeinvoice.online/blog/{slug}", 'blog')
         add_to_blog_index(
             article_data.get('title', topic['title']),
             filename,
@@ -736,7 +736,7 @@ def run_evergreen_mode():
     print(f"   ✅ Saved: {filename}")
 
     # Add to sitemap and blog index
-    add_to_sitemap(f"https://www.makeinvoice.online/blog/{filename}", 'blog')
+    add_to_sitemap(f"https://www.makeinvoice.online/blog/{slug}", 'blog')
     add_to_blog_index(
         article_data.get('title', selected),
         filename,
