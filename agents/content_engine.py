@@ -689,7 +689,8 @@ def run_landing_mode():
         'title': selected['title'],
         'slug': selected['slug'],
         'file': f"{selected['slug']}.html",
-        'score': review.get('score', 'N/A')
+        'score': review.get('score', 'N/A'),
+        'type': 'landing',
     }]
 
 
@@ -848,7 +849,7 @@ def main():
                 if r.get('type') == 'landing':
                     url = f"https://www.makeinvoice.online/{slug}"
                 else:
-                    url = f"https://www.makeinvoice.online/blog/{slug}.html"
+                    url = f"https://www.makeinvoice.online/blog/{slug}"
                 summary += f"  🔗 [View]({url})\n"
             elif r.get('file'):
                 # Fallback for landing pages
