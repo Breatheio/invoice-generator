@@ -16,7 +16,8 @@
     "freelance invoice template"
   ],
   "created_landing": [
-    "invoice-generator-for-consultants"
+    "invoice-generator-for-consultants",
+    "templates/professional-invoice"
   ],
   "created_evergreen": []
 }
