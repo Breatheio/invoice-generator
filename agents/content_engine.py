@@ -683,6 +683,9 @@ def run_landing_mode():
     tracking["created_landing"].append(selected['slug'])
     save_tracking(tracking)
 
+    # Add to sitemap
+    add_to_sitemap(f"https://www.makeinvoice.online/landing-pages/{selected['slug']}", 'landing')
+
     print(f"   ✅ Saved: {filepath}")
 
     return [{
@@ -847,7 +850,7 @@ def main():
             if r.get('slug'):
                 slug = r['slug']
                 if r.get('type') == 'landing':
-                    url = f"https://www.makeinvoice.online/{slug}"
+                    url = f"https://www.makeinvoice.online/landing-pages/{slug}"
                 else:
                     url = f"https://www.makeinvoice.online/blog/{slug}"
                 summary += f"  🔗 [View]({url})\n"
