@@ -5,7 +5,8 @@
   ],
   "created_landing": [
     "invoice-generator-for-consultants",
-    "templates/professional-invoice"
+    "templates/professional-invoice",
+    "invoice-generator-for-web-designers"
   ],
   "created_evergreen": []
 }
