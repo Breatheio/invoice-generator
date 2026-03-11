@@ -3,7 +3,9 @@
     "invoice vs receipt",
     "invoice for services rendered",
     "invoice due date",
-    "proforma invoice"
+    "proforma invoice",
+    "small business invoice",
+    "recurring invoice"
   ],
   "created_landing": [
     "invoice-generator-for-consultants",
