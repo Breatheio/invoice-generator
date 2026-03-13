@@ -10,7 +10,8 @@
   "created_landing": [
     "invoice-generator-for-consultants",
     "templates/professional-invoice",
-    "invoice-generator-for-web-designers"
+    "invoice-generator-for-web-designers",
+    "templates/project-invoice"
   ],
   "created_evergreen": []
 }
