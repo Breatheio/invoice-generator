@@ -13,7 +13,8 @@
     "invoice-generator-for-consultants",
     "templates/professional-invoice",
     "invoice-generator-for-web-designers",
-    "templates/project-invoice"
+    "templates/project-invoice",
+    "invoice-generator-for-writers"
   ],
   "created_evergreen": []
 }
