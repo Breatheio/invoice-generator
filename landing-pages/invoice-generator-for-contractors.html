@@ -1,0 +1,322 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generator for Contractors | MakeInvoice.online</title>
+    <meta name="description" content="Professional invoice generator designed specifically for contractors. Create detailed invoices with labor, materials, and project costs. Get paid faster with our contractor-focused invoicing solution.">
+    <meta name="keywords" content="contractor invoice generator, construction invoicing, contractor billing software, project invoices, construction invoice template">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Invoice Generator for Contractors | MakeInvoice.online">
+    <meta property="og:description" content="Professional invoice generator designed specifically for contractors. Create detailed invoices with labor, materials, and project costs.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://makeinvoice.online/invoice-generator-for-contractors">
+    
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "MakeInvoice.online - Contractor Invoice Generator",
+        "description": "Professional invoice generator designed specifically for contractors and construction businesses",
+        "url": "https://makeinvoice.online/invoice-generator-for-contractors",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "Labor and material cost breakdown",
+            "Project-based invoicing",
+            "Professional contractor templates",
+            "Instant PDF generation",
+            "Mobile-friendly interface"
+        ]
+    }
+    </script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-blue-900 to-blue-700 text-white">
+        <div class="container mx-auto px-4 py-16">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                    Professional Invoice Generator for <span class="text-yellow-400">Contractors</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-blue-100">
+                    Stop losing money on unpaid invoices. Create detailed, professional invoices that get you paid faster – with separate line items for labor, materials, and equipment.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                    <a href="#get-started" class="bg-yellow-500 hover:bg-yellow-400 text-blue-900 font-bold py-4 px-8 rounded-lg text-lg transition-colors">
+                        Create Your First Invoice Now
+                    </a>
+                    <a href="#how-it-works" class="border-2 border-white hover:bg-white hover:text-blue-900 font-bold py-4 px-8 rounded-lg text-lg transition-colors">
+                        See How It Works
+                    </a>
+                </div>
+                
+                <!-- Preview Image -->
+                <div class="bg-white rounded-lg shadow-2xl p-6 max-w-2xl mx-auto">
+                    <div class="bg-gray-100 rounded border">
+                        <div class="bg-blue-600 text-white p-4 rounded-t">
+                            <h3 class="font-bold text-lg">INVOICE #2024-001</h3>
+                            <p class="text-sm opacity-90">Thompson Construction LLC</p>
+                        </div>
+                        <div class="p-4 space-y-2 text-gray-800 text-left">
+                            <div class="flex justify-between">
+                                <span class="font-medium">Kitchen Renovation - Labor</span>
+                                <span class="font-bold">$4,500.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Materials - Cabinets & Hardware</span>
+                                <span class="font-bold">$2,850.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Equipment Rental - 3 days</span>
+                                <span class="font-bold">$450.00</span>
+                            </div>
+                            <hr class="my-2">
+                            <div class="flex justify-between text-lg font-bold">
+                                <span>Total Due:</span>
+                                <span>$7,800.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pain Points Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800">
+                    Are These Contractor Invoicing Problems Costing You Money?
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-8 mb-12">
+                    <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded">
+                        <h3 class="text-xl font-bold mb-3 text-red-800">📝 Handwritten Invoices Look Unprofessional</h3>
+                        <p class="text-gray-700">Clients question your credibility when you hand them a scribbled invoice on notebook paper. You're losing jobs to contractors who look more established.</p>
+                    </div>
+                    
+                    <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded">
+                        <h3 class="text-xl font-bold mb-3 text-red-800">⏰ Getting Paid Takes Forever</h3>
+                        <p class="text-gray-700">Without clear payment terms and professional invoices, clients "forget" to pay or claim they never received your bill. Your cash flow suffers.</p>
+                    </div>
+                    
+                    <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded">
+                        <h3 class="text-xl font-bold mb-3 text-red-800">🧮 Can't Track Labor vs. Materials</h3>
+                        <p class="text-gray-700">Lumping everything into one line item makes it hard for clients to understand costs and creates disputes. You need clear breakdowns for transparency.</p>
+                    </div>
+                    
+                    <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded">
+                        <h3 class="text-xl font-bold mb-3 text-red-800">💼 Competing with Bigger Companies</h3>
+                        <p class="text-gray-700">Large construction companies have professional billing systems. You need to match their professionalism to win premium projects.</p>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <p class="text-xl text-gray-600 mb-6">
+                        <strong>You're not just a contractor – you're running a business.</strong> Your invoices should reflect that professionalism.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800">
+                    Built Specifically for Contractors Like You
+                </h2>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-3xl mb-4">🏗️</div>
+                        <h3 class="text-xl font-bold mb-3">Detailed Cost Breakdowns</h3>
+                        <p class="text-gray-600 mb-4">Separate line items for labor, materials, equipment rental, permits, and subcontractor costs. Show clients exactly what they're paying for.</p>
+                        <div class="bg-gray-100 p-3 rounded text-sm">
+                            <strong>Example:</strong><br>
+                            • Framing Labor (40 hrs @ $45/hr)<br>
+                            • Lumber & Materials<br>
+                            • Tool Rental (3 days)
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-3xl mb-4">📋</div>
+                        <h3 class="text-xl font-bold mb-3">Project-Based Invoicing</h3>
+                        <p class="text-gray-600 mb-4">Perfect for milestone billing, progress payments, or final invoices. Include project details, phases, and completion percentages.</p>
+                        <div class="bg-gray-100 p-3 rounded text-sm">
+                            <strong>Example:</strong><br>
+                            Project: Bathroom Remodel<br>
+                            Phase 2 of 3: Plumbing & Electrical<br>
+                            60% Complete
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-3xl mb-4">⚡</div>
+                        <h3 class="text-xl font-bold mb-3">Instant Professional PDFs</h3>
+                        <p class="text-gray-600 mb-4">Generate polished invoices in seconds. Email directly to clients or print on-site. No more excuses about "forgetting" your invoice book.</p>
+                        <div class="bg-gray-100 p-3 rounded text-sm">
+                            <strong>Features:</strong><br>
+                            • Your logo & company info<br>
+                            • Clear payment terms<br>
+                            • Professional formatting
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-3xl mb-4">📱</div>
+                        <h3 class="text-xl font-bold mb-3">Works on Your Phone</h3>
+                        <p class="text-gray-600 mb-4">Create invoices right from the job site. No need to go back to the office or remember details later. Invoice while the work is fresh in your mind.</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-3xl mb-4">🎯</div>
+                        <h3 class="text-xl font-bold mb-3">Contractor Templates</h3>
+                        <p class="text-gray-600 mb-4">Pre-built templates for common contractor services: remodeling, repairs, new construction, electrical work, plumbing, and more.</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-3xl mb-4">💰</div>
+                        <h3 class="text-xl font-bold mb-3">Get Paid Faster</h3>
+                        <p class="text-gray-600 mb-4">Professional invoices with clear payment terms get paid 40% faster. Include late fees and your preferred payment methods.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800">
+                    How It Works (It's Ridiculously Simple)
+                </h2>
+                
+                <div class="space-y-8">
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold">1</div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold mb-2">Enter Your Business Details</h3>
+                            <p class="text-gray-600">Add your company name, logo, address, and contact info. This only needs to be done once – we'll save it for future invoices.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold">2</div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold mb-2">Add Client & Project Info</h3>
+                            <p class="text-gray-600">Enter your client's details and project information. Include project name, address, and any reference numbers.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold">3</div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold mb-2">Break Down Your Costs</h3>
+                            <p class="text-gray-600">Add line items for labor (with hours and rates), materials (itemized), equipment rental, permits, and subcontractor fees. Be as detailed as needed.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold">4</div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold mb-2">Generate & Send</h3>
+                            <p class="text-gray-600">Preview your professional invoice, download as PDF, and email to your client. Or print it right from your phone on the job site.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-12">
+                    <p class="text-lg text-gray-600 mb-6">
+                        <strong>Total time:</strong> Less than 3 minutes for most invoices
+                    </p>
+                    <a href="#get-started" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors">
+                        Try It Now – It's Free
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="py-16 bg-blue-50">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <div class="text-4xl text-blue-600 mb-4">"</div>
+                    <blockquote class="text-xl text-gray-700 mb-6">
+                        "I was losing jobs because my handwritten invoices looked unprofessional. Since switching to MakeInvoice.online, I'm getting paid faster and my clients take me more seriously. The detailed breakdowns for labor and materials have eliminated all those 'what am I paying for?' conversations. Best part? I can create professional invoices right from the job site on my phone."
+                    </blockquote>
+                    <div class="flex items-center justify-center space-x-4">
+                        <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                            MR
+                        </div>
+                        <div class="text-left">
+                            <p class="font-bold text-gray-800">Mike Rodriguez</p>
+                            <p class="text-gray-600">Rodriguez Home Improvements</p>
+                            <p class="text-sm text-gray-500">General Contractor, Austin TX</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-center space-x-1">
+                        <span class="text-yellow-500 text-xl">★★★★★</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800">
+                    Perfect for Every Type of Contractor
+                </h2>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="border rounded-lg overflow-hidden shadow-md">
+                        <div class="bg-green-600 text-white p-4">
+                            <h3 class="font-bold">General Contractor</h3>
+                        </div>
+                        <div class="p-4 text-sm space-y-2">
+                            <div class="flex justify-between">
+                                <span>Site Preparation (8 hrs)</span>
+                                <span>$600</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Framing Materials</span>
+                                <span>$2,400</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Framing Labor (24 hrs)</span>
+                                <span>$1,080</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Permits & Inspections</span>
+                                <span>$350</span>
+                            </div>
+                            <hr>
+                            <div class="flex justify-between font-bold">
+                                <span>Total</span>
+                                <span>$4,430</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg overflow-hidden
