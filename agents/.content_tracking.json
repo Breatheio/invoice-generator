@@ -16,7 +16,8 @@
     "templates/project-invoice",
     "invoice-generator-for-writers",
     "invoice-generator-for-marketing-agencies",
-    "invoice-generator-for-contractors"
+    "invoice-generator-for-contractors",
+    "invoice-generator-for-graphic-designers"
   ],
   "created_evergreen": []
 }
