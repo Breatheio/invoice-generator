@@ -1,0 +1,306 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generator for Coaches & Trainers - MakeInvoice.online</title>
+    <meta name="description" content="Professional invoice generator designed specifically for coaches and trainers. Create invoices for sessions, packages, workshops, and ongoing programs in minutes.">
+    <meta name="keywords" content="coach invoice generator, trainer invoicing, coaching invoice template, fitness trainer invoice, life coach billing">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Invoice Generator for Coaches & Trainers">
+    <meta property="og:description" content="Create professional invoices for coaching sessions, training packages, and workshops. Built specifically for coaches and personal trainers.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://makeinvoice.online/invoice-generator-for-coaches">
+    
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "MakeInvoice.online - Coach Invoice Generator",
+        "description": "Professional invoice generator for coaches and trainers",
+        "url": "https://makeinvoice.online/invoice-generator-for-coaches",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "Coaching session invoices",
+            "Training package billing",
+            "Workshop invoicing",
+            "Recurring invoice templates"
+        ]
+    }
+    </script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <!-- Hero Section -->
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+        <div class="max-w-6xl mx-auto px-6 py-16">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">
+                    Professional Invoices for Coaches & Trainers
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-blue-100">
+                    Create polished invoices for sessions, packages, and workshops in minutes. 
+                    No more generic templates that don't fit your coaching business.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a href="#create-invoice" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors">
+                        Create Your First Invoice
+                    </a>
+                    <span class="text-blue-200">100% Free • No Sign-up Required</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Pain Points Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Tired of Invoicing Headaches?</h2>
+                <p class="text-xl text-gray-600">We understand the unique challenges coaches and trainers face</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Complex Pricing Structures</h3>
+                    <p class="text-gray-600">Individual sessions, package deals, group coaching, workshops - your pricing isn't one-size-fits-all, so why should your invoices be?</p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Unprofessional Templates</h3>
+                    <p class="text-gray-600">Generic invoice templates make your premium coaching services look amateur. Your clients deserve better.</p>
+                </div>
+                
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Time-Consuming Admin</h3>
+                    <p class="text-gray-600">You got into coaching to help people, not to spend hours on paperwork. Every minute on admin is a minute away from your clients.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Built Specifically for Your Coaching Business</h2>
+                <p class="text-xl text-gray-600">Everything you need to invoice clients professionally and get paid faster</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-2xl font-bold mb-6">Perfect for Every Coaching Service</h3>
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Individual Coaching Sessions</h4>
+                                <p class="text-gray-600">Invoice for 1:1 life coaching, business coaching, or specialty sessions with clear session details and rates.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Training Packages & Programs</h4>
+                                <p class="text-gray-600">Personal training packages, group fitness programs, or multi-session coaching programs with flexible payment terms.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Workshops & Seminars</h4>
+                                <p class="text-gray-600">Professional invoicing for workshops, masterclasses, retreat bookings, and group events.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Recurring Coaching Programs</h4>
+                                <p class="text-gray-600">Monthly coaching retainers, ongoing training memberships, or subscription-based programs.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h4 class="text-lg font-semibold mb-4 text-center">Sample Coach Invoice</h4>
+                    <div class="border rounded-lg p-4 text-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h5 class="font-bold">Sarah Johnson Coaching</h5>
+                                <p class="text-gray-600">Life & Business Coach</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold">Invoice #2024-001</p>
+                                <p class="text-gray-600">Jan 15, 2024</p>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t border-b py-3 my-4">
+                            <div class="flex justify-between mb-2">
+                                <span>3-Month Leadership Coaching Package</span>
+                                <span>$2,400.00</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600 text-xs">
+                                <span>6 sessions × $400/session</span>
+                                <span>Package discount applied</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between font-bold">
+                            <span>Total Due:</span>
+                            <span>$2,400.00</span>
+                        </div>
+                        
+                        <p class="text-xs text-gray-600 mt-3">Payment due within 14 days. Thank you for investing in your growth!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-16 bg-white">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Create Professional Invoices in 3 Simple Steps</h2>
+                <p class="text-xl text-gray-600">No learning curve. No complicated setup. Just professional results.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-white">1</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Choose Your Service Type</h3>
+                    <p class="text-gray-600">Select from coaching session, training package, workshop, or custom service. Our templates are pre-built for your industry.</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-white">2</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Add Your Details</h3>
+                    <p class="text-gray-600">Enter your coaching business info, client details, service description, and rates. Everything auto-calculates for you.</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-white">3</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Download & Send</h3>
+                    <p class="text-gray-600">Get your professional PDF invoice instantly. Email it to your client or save it for your records. That's it!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial -->
+    <section class="py-16 bg-blue-600 text-white">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <div class="mb-8">
+                <svg class="w-16 h-16 mx-auto mb-6 text-blue-200" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
+                </svg>
+            </div>
+            
+            <blockquote class="text-2xl md:text-3xl font-light mb-8">
+                "Finally, an invoice generator that gets coaching! I love how I can create different invoices for my 1:1 sessions vs. my group programs. My clients always comment on how professional everything looks."
+            </blockquote>
+            
+            <div class="flex items-center justify-center space-x-4">
+                <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span class="text-xl font-bold">MR</span>
+                </div>
+                <div class="text-left">
+                    <p class="font-semibold text-lg">Maria Rodriguez</p>
+                    <p class="text-blue-200">Executive Coach & Leadership Trainer</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="create-invoice" class="py-16 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-6">Ready to Create Your First Professional Invoice?</h2>
+            <p class="text-xl text-gray-600 mb-8">
+                Join thousands of coaches and trainers who trust MakeInvoice.online for their billing needs.
+                Start creating professional invoices in the next 5 minutes.
+            </p>
+            
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-green-600 mb-2">100%</div>
+                        <p class="text-gray-600">Free to Use</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-green-600 mb-2">0</div>
+                        <p class="text-gray-600">Sign-up Required</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-green-600 mb-2">∞</div>
+                        <p class="text-gray-600">Invoices You Can Create</p>
+                    </div>
+                </div>
+                
+                <a href="/" class="inline-block bg-blue-600 text-white px-10 py-4 rounded-lg font-semibold text-xl hover:bg-blue-700 transition-colors">
+                    Create Your Coach Invoice Now
+                </a>
+            </div>
+            
+            <p class="text-gray-500">
+                Trusted by life coaches, business coaches, fitness trainers, wellness coaches, and coaching professionals worldwide.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-8">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p>&copy;
