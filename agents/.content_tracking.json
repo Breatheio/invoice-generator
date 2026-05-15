@@ -20,7 +20,8 @@
     "invoice-generator-for-graphic-designers",
     "invoice-generator-for-coaches",
     "templates/hourly-invoice",
-    "invoice-generator-for-freelancers"
+    "invoice-generator-for-freelancers",
+    "templates/simple-invoice"
   ],
   "created_evergreen": []
 }
